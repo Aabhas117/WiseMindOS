@@ -4,7 +4,13 @@ const GradientButton = ({ children, onClick, className = '', type = 'button', di
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      className={`relative overflow-hidden
+        bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600
+        bg-[length:200%_200%]
+        text-white font-semibold py-3 px-6 rounded-xl hover:shadow-[0_0_20px_rgba(99,102,241,0.6)]  hover:-translate-y-1 active:scale-95 transition-all duration-300
+        shadow-lg
+        disabled:opacity-50 disabled:cursor-not-allowed
+        ${className}`}
     >
       {children}
     </button>

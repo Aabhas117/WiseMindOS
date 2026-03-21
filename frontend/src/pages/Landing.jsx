@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
+import { motion } from "framer-motion";
 import { Target, TrendingUp, Sparkles, Brain, CheckCircle, Zap } from 'lucide-react';
 import GradientButton from '../components/GradientButton';
 import Card from '../components/Card';
+import { ArrowRight } from 'lucide-react';
 
 const Landing = () => {
   const features = [
@@ -33,63 +35,92 @@ const Landing = () => {
     {
       icon: <Zap size={32} />,
       title: 'Holistic Development',
-      description: 'Focus on balanced growth and reduce burnout'
+      description: 'Focus on balanced growth and participation in larger order.'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 py-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 to-violet-900/20"></div>
-        
-        <div className="relative max-w-4xl mx-auto text-center">
-          <div className="mb-8">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-4">
-              Wise<span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Mind</span>OS
-            </h1>
-            <div className="h-1 w-32 bg-gradient-to-r from-indigo-600 to-violet-600 mx-auto rounded-full"></div>
-          </div>
-          
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
-            Your intelligent life tracking and simulation system.
-            <br />
-            Stay focused, achieve goals, and optimize your future.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link to="/signup">
-              <GradientButton data-testid="get-started-btn" className="w-full sm:w-auto">
-                Get Started
-              </GradientButton>
-            </Link>
-            <Link to="/login">
-              <button 
-                data-testid="login-btn"
-                className="px-8 py-3 border-2 border-indigo-500 text-white rounded-xl font-semibold hover:bg-indigo-500/10 transition-all duration-300 w-full sm:w-auto"
-              >
-                Login
-              </button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <div className='bg-gradient-to-br from-gray-900 via-black to-gray-900'>
+        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }}>
+          <motion.section animate={{ y: [0, -10, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="relative min-h-screen flex items-center justify-center px-4 py-20">
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900"></div>
+            {/* Glow blobs */}
+            <motion.div
+              className="absolute top-20 left-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl opacity-20"
+              animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
+              transition={{ duration: 10, repeat: Infinity }}
+            />
+
+            <motion.div
+              className="absolute bottom-20 right-10 w-72 h-72 bg-indigo-500 rounded-full blur-3xl opacity-20"
+              animate={{ x: [0, -50, 0], y: [0, -30, 0] }}
+              transition={{ duration: 12, repeat: Infinity }}
+            />
+
+            <div className="relative max-w-4xl mx-auto text-center">
+              <div className="mb-8">
+                <h1 className="text-4xl young-serif-regular md:text-7xl font-extrabold tracking-tight text-white mb-4 cursor-pointer hover:drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]">
+                  Wise<span className="bg-gradient-to-r text-5xl md:text-8xl baloo-2-400 from-indigo-500 to-purple-500 bg-clip-text text-transparent">Mind</span>OS
+                </h1>
+                <div className="h-1 w-32 bg-gradient-to-r from-indigo-600 to-violet-600 mx-auto rounded-full"></div>
+              </div>
+
+              <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+                Your intelligent life tracking and simulation system.
+                <br />
+                Stay focused, achieve goals, and optimize your future.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link to="/signup">
+                  <GradientButton data-testid="get-started-btn" className="w-full sm:w-auto">
+                    Get Started
+                  </GradientButton>
+                </Link>
+                <Link to="/login">
+                  <button
+                    data-testid="login-btn"
+                    className="px-8 py-[10px] border-2 border-indigo-500 text-white rounded-xl font-semibold 
+                        hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.6)] 
+                        hover:-translate-y-1 active:scale-95 transition-all duration-300"
+                  >
+                    Login
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </motion.section>
+        </motion.div>
+      </div>
+
+      
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-gray-800/50">
+      <section className="py-20 px-4 bg-white dark:bg-gray-800/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Powerful Features</h2>
-            <p className="text-gray-400 text-lg">Everything you need for holistic personal development</p>
+            <h2 className="text-3xl md:text-4xl font-bold young-serif-regular text-gray-600 dark:text-gray-100 mb-2">Powerful Features</h2>
+            <div className="h-1 w-39 bg-gradient-to-r from-indigo-600 to-violet-600 mx-auto rounded-full"></div>
+            <p className="text-gray-900 dark:text-gray-300 mt-2 text-base md:text-lg">Everything you need for holistic personal development</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
-              <Card key={index} className="hover:scale-105 transition-transform duration-300">
-                <div className="text-indigo-400 mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-400">{feature.description}</p>
-              </Card>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+
+                <Card key={index} className="bg-white/5 backdrop-blur-lg border border-white/10 
+hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer">
+                  <div className="p-3 bg-indigo-500/20 rounded-lg w-fit mb-4 text-indigo-400">{feature.icon}</div>
+                  <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
+                  <p className="text-gray-400">{feature.description}</p>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -99,10 +130,11 @@ const Landing = () => {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">How It Works</h2>
-            <p className="text-gray-400 text-lg">Simple steps to transform your life</p>
+            <h2 className="text-3xl md:text-4xl font-bold young-serif-regular text-gray-200 mb-2">How It Works</h2>
+            <div className="h-1 w-30 bg-gradient-to-r from-indigo-600 to-violet-600 mx-auto rounded-full"></div>
+            <p className="text-gray-400 mt-2 text-base md:text-lg">Simple steps to transform your life</p>
           </div>
-          
+
           <div className="space-y-8">
             {[
               { step: '01', title: 'Track Your Life', desc: 'Log your daily habits, tasks, and progress' },
@@ -110,41 +142,188 @@ const Landing = () => {
               { step: '03', title: 'Simulate Future', desc: 'Use FutureTwin AI to predict outcomes and optimize decisions' },
               { step: '04', title: 'Achieve Goals', desc: 'Stay consistent and watch your goals become reality' }
             ].map((item, index) => (
-              <div key={index} className="flex items-start gap-6">
-                <div className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent flex-shrink-0">
-                  {item.step}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+
+                <div key={index} className="flex items-start gap-6 p-2 rounded-3xl cursor-pointer 
+bg-white/5 backdrop-blur-lg border border-white/10 
+hover:scale-[1.02] hover:bg-white/10 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]">
+                  <div className='p-4 flex items-start gap-6'>
+                    <div className="text-4xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent flex-shrink-0">
+                      {item.step}
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-semibold text-white mb-2">{item.title}</h3>
+                      <p className="text-gray-400">{item.desc}</p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-2xl font-semibold text-white mb-2">{item.title}</h3>
-                  <p className="text-gray-400">{item.desc}</p>
-                </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
+      
+
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-indigo-900/30 to-violet-900/30">
+      <section className="py-20 px-4 bg-gradient-to-r from-indigo-800 via-purple-800 to-indigo-900 shadow-[0_0_60px_rgba(99,102,241,0.4)]">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">
+          <h2 className="text-4xl font-bold young-serif-regular text-white mb-6">
             Ready to Optimize Your Life?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
             Join thousands who are achieving their goals with WiseMindOS
           </p>
           <Link to="/signup">
-            <GradientButton data-testid="cta-signup-btn" className="text-lg">
+            <GradientButton data-testid="cta-signup-btn" classNameclassName="
+    text-lg 
+    bg-white text-black 
+    bg-gradient-to-r from-green-500 via-blue-500 to-purple-600
+    hover:bg-gray-200 
+    shadow-[0_0_30px_rgba(255,255,255,0.6)]
+  ">
               Start Your Journey Today
             </GradientButton>
           </Link>
         </div>
       </section>
 
+      {/* Stats Section */}
+      <section className="py-20 px-4 relative">
+        {/* Background glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-900/10 to-transparent"></div>
+
+        <div className="max-w-6xl mx-auto relative">
+          
+          {/* Heading */}
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold young-serif-regular text-white mb-2">
+              Trusted by Achievers
+            </h2>
+            <div className="h-1 w-32 bg-gradient-to-r from-indigo-600 to-purple-600 mx-auto rounded-full"></div>
+            <p className="text-gray-400 mt-3 text-base md:text-lg">
+              Real impact on productivity and growth
+            </p>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+            {[
+              { value: "10K+", label: "Active Users" },
+              { value: "95%", label: "Goal Completion Rate" },
+              { value: "2.5x", label: "Productivity Boost" },
+              { value: "24/7", label: "AI Support" }
+            ].map((stat, index) => (
+
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+
+                <div className="
+                  bg-white/5 backdrop-blur-lg border border-white/10 
+                  rounded-2xl cursor-pointer p-6 text-center
+                  hover:scale-105 hover:bg-white/10
+                  transition-all duration-300
+                  hover:shadow-[0_0_25px_rgba(99,102,241,0.3)]
+                ">
+
+                  {/* Number */}
+                  <h3 className="
+                    text-3xl md:text-4xl baloo-2-700 font-extrabold 
+                    bg-gradient-to-r from-blue-500 to-purple-700 
+                    bg-clip-text text-transparent mb-2 drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]
+                  ">
+                    {stat.value}
+                  </h3>
+
+                  {/* Label */}
+                  <p className="text-gray-400 text-sm md:text-base">
+                    {stat.label}
+                  </p>
+
+                </div>
+
+              </motion.div>
+            ))}
+
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="py-8 px-4 bg-gray-800 border-t border-gray-700">
-        <div className="max-w-6xl mx-auto text-center text-gray-400">
-          <p>&copy; 2025 WiseMindOS. All rights reserved.</p>
+      <footer className="py-16 px-4 bg-gray-800/50 border-t border-gray-700 relative overflow-hidden">
+
+        {/* Subtle glow background */}
+        <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/10 to-transparent"></div>
+
+        <div className="max-w-6xl mx-auto relative">
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+
+            {/* Branding */}
+            <div>
+              <h2 className="text-2xl young-serif-regular font-bold mb-4">
+                Wise<span className="bg-gradient-to-r text-3xl baloo-2-400 from-indigo-500 to-purple-500 bg-clip-text text-transparent">Mind</span>OS
+              </h2>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Your intelligent life tracking and simulation system.  
+                Optimize your habits, goals, and future decisions.
+              </p>
+            </div>
+
+            {/* Product Links */}
+            <div>
+              <h3 className="text-white font-semibold mb-4">Product</h3>
+              <ul className="space-y-2 text-gray-400 text-sm">
+                <li className="hover:text-white transition cursor-pointer">Features</li>
+                <li className="hover:text-white transition cursor-pointer">Pricing</li>
+                <li className="hover:text-white transition cursor-pointer">Roadmap</li>
+              </ul>
+            </div>
+
+            {/* Company Links */}
+            <div>
+              <h3 className="text-white font-semibold mb-4">Company</h3>
+              <ul className="space-y-2 text-gray-400 text-sm">
+                <li className="hover:text-white transition cursor-pointer">About</li>
+                <li className="hover:text-white transition cursor-pointer">Careers</li>
+                <li className="hover:text-white transition cursor-pointer">Contact</li>
+              </ul>
+            </div>
+
+            {/* CTA / Social */}
+            <div>
+              <h3 className="text-white font-semibold mb-4">Get Started</h3>
+
+              <Link to="/signup">
+                <GradientButton className="bg-white text-black hover:bg-gray-200 w-full mb-4">
+                  <span className="flex items-center justify-center gap-2">
+                    Start Free
+                    <ArrowRight size={18} />
+                  </span>
+                </GradientButton>
+              </Link>
+
+              <p className="text-gray-400 text-sm">
+                Join thousands building better habits.
+              </p>
+            </div>
+
+          </div>
+
+          {/* Bottom Line */}
+          <div className="mt-12 pt-6 border-t border-gray-700 text-center text-gray-400 text-sm">
+            © 2026 <span className="text-white font-semibold">WiseMindOS</span>. All rights reserved.
+          </div>
+
         </div>
       </footer>
     </div>
