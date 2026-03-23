@@ -4,6 +4,7 @@ import { Target, TrendingUp, Sparkles, Brain, CheckCircle, Zap } from 'lucide-re
 import GradientButton from '../components/GradientButton';
 import Card from '../components/Card';
 import { ArrowRight } from 'lucide-react';
+import logo from '../assets/logo.jpeg';
 
 const Landing = () => {
   const features = [
@@ -60,7 +61,7 @@ const Landing = () => {
             />
 
             <div className="relative max-w-4xl mx-auto text-center">
-              <div className="mb-8">
+              {/* <div className="mb-8">
                 <motion.h1 className="text-4xl young-serif-regular md:text-7xl font-extrabold tracking-tight text-white mb-4 cursor-pointer" 
                 animate={{
                   textShadow: [
@@ -77,6 +78,42 @@ const Landing = () => {
                   }}>
                   Wise<span className="bg-gradient-to-r text-5xl md:text-8xl baloo-2-700 from-indigo-500 to-purple-500 bg-clip-text text-transparent">Mind</span>OS
                 </motion.h1>
+                <div className="h-1 w-32 bg-gradient-to-r from-indigo-600 to-violet-600 mx-auto rounded-full"></div>
+              </div> */}
+              <div className="mb-8 flex flex-col items-center">
+
+                {/* Logo */}
+                <motion.img
+                  src={logo}
+                  alt="WiseMindOS Logo"
+                  className="w-20 h-20 md:w-28 md:h-28 mb-4 object-contain"
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                />
+
+                {/* Title */}
+                <motion.h1
+                  className="text-4xl young-serif-regular md:text-7xl font-extrabold tracking-tight text-white mb-4 cursor-pointer"
+                  animate={{
+                    textShadow: [
+                      "0px 0px 0px rgba(99,102,241,0)",
+                      "0px 0px 20px rgba(99,102,241,0.8)",
+                      "0px 0px 0px rgba(99,102,241,0)"
+                    ]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  Wise
+                  <span className="bg-gradient-to-r text-5xl md:text-8xl baloo-2-700 from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+                    Mind
+                  </span>
+                  OS
+                </motion.h1>
+
                 <div className="h-1 w-32 bg-gradient-to-r from-indigo-600 to-violet-600 mx-auto rounded-full"></div>
               </div>
 
