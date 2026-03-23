@@ -4,28 +4,20 @@ import InputField from '../components/InputField';
 import GradientButton from '../components/GradientButton';
 import Card from '../components/Card';
 import { validateEmail } from '../utils/helpers';
+import { motion } from 'framer-motion'
+
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    goals: []
   });
   const [error, setError] = useState('');
 
-  const goalOptions = [
-    'Improve Productivity',
-    'Build Better Habits',
-    'Achieve Fitness Goals',
-    'Learn New Skills',
-    'Career Growth',
-    'Mental Wellness'
-  ];
-
-  const handleStep1Submit = (e) => {
+  const handleSignUpSubmit = (e) => {
     e.preventDefault();
     setError('');
 
@@ -44,130 +36,104 @@ const Signup = () => {
       return;
     }
 
-    setStep(2);
-  };
-
-  const handleGoalToggle = (goal) => {
-    if (formData.goals.includes(goal)) {
-      setFormData({
-        ...formData,
-        goals: formData.goals.filter(g => g !== goal)
-      });
-    } else {
-      setFormData({
-        ...formData,
-        goals: [...formData.goals, goal]
-      });
-    }
-  };
-
-  const handleFinalSubmit = () => {
-    // Mock signup - in real app would call API
-    localStorage.setItem('wisemind_user', JSON.stringify({ 
+    localStorage.setItem('wisemind_user', JSON.stringify({
       name: formData.name,
       email: formData.email,
-      goals: formData.goals
+      password: formData.password,
     }));
-    navigate('/onboarding');
+
+    navigate('/onboarding')
   };
 
+
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      <motion.div
+        className="absolute top-20 left-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl opacity-20"
+        animate={{ x: [0, 40, 0], y: [0, 20, 0] }}
+        transition={{ duration: 10, repeat: Infinity }}
+      />
+
+      <motion.div
+        className="absolute bottom-20 right-10 w-72 h-72 bg-indigo-500 rounded-full blur-3xl opacity-20"
+        animate={{ x: [0, -40, 0], y: [0, -20, 0] }}
+        transition={{ duration: 12, repeat: Infinity }}
+      />
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/">
-            <h1 className="text-4xl font-bold text-white mb-2">
-              Wise<span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Mind</span>OS
-            </h1>
+            <motion.h1
+              className="text-4xl young-serif-regular font-bold text-white mb-2"
+
+              animate={{
+                textShadow: [
+                  "0px 0px 0px rgba(99,102,241,0)",        // no glow
+                  "0px 0px 20px rgba(99,102,241,0.8)",     // glow
+                  "0px 0px 0px rgba(99,102,241,0)"         // back to normal
+                ]
+              }}
+
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              Wise<span className="bg-gradient-to-r from-indigo-500 to-purple-600 baloo-2-700 md:text-5xl  bg-clip-text text-transparent">Mind</span>OS
+            </motion.h1>
           </Link>
           <p className="text-gray-400">Create your account and start tracking</p>
         </div>
 
-        <Card>
-          {step === 1 ? (
-            <>
-              <h2 className="text-2xl font-bold text-white mb-6">Sign Up</h2>
-              
-              {error && (
-                <div className="bg-red-500/10 border border-red-500 text-red-400 px-4 py-3 rounded-lg mb-4">
-                  {error}
-                </div>
-              )}
+        <Card className='bg-white/5 backdrop-blur-xl 
+border border-white/10 
+rounded-2xl p-8
+shadow-[0_0_40px_rgba(99,102,241,0.2)]'>
 
-              <form onSubmit={handleStep1Submit} className="space-y-4">
-                <InputField
-                  label="Name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Enter your name"
-                  required
-                />
+          <>
+            <h2 className="text-2xl young-serif-regular text-center font-bold text-gray-200 mb-6">Sign Up</h2>
 
-                <InputField
-                  label="Email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="Enter your email"
-                  required
-                />
+            {error && (
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-500/10 border border-red-500 text-red-400 px-4 py-3 rounded-lg mb-4">
+                {error}
+              </motion.div>
+            )}
 
-                <InputField
-                  label="Password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="Create a password (min 6 characters)"
-                  required
-                />
+            <form onSubmit={handleSignUpSubmit} className="space-y-4">
+              <InputField
+                label="Name"
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Enter your name"
+                required
+              />
 
-                <GradientButton type="submit" className="w-full mt-6" data-testid="signup-continue-btn">
-                  Continue
-                </GradientButton>
-              </form>
-            </>
-          ) : (
-            <>
-              <h2 className="text-2xl font-bold text-white mb-2">Select Your Goals</h2>
-              <p className="text-gray-400 mb-6">Choose what you want to achieve (optional)</p>
+              <InputField
+                label="Email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="Enter your email"
+                required
+              />
 
-              <div className="space-y-3 mb-6">
-                {goalOptions.map((goal) => (
-                  <button
-                    key={goal}
-                    onClick={() => handleGoalToggle(goal)}
-                    data-testid={`goal-${goal.toLowerCase().replace(/\s+/g, '-')}`}
-                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                      formData.goals.includes(goal)
-                        ? 'border-indigo-500 bg-indigo-500/10 text-white'
-                        : 'border-gray-600 text-gray-300 hover:border-gray-500'
-                    }`}
-                  >
-                    {goal}
-                  </button>
-                ))}
-              </div>
+              <InputField
+                label="Password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                placeholder="Create a password (min 6 characters)"
+                required
+              />
+              <p className="text-sm text-gray-500">
+                Must be at least 6 characters
+              </p>
 
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setStep(1)}
-                  className="flex-1 px-6 py-3 border-2 border-gray-600 text-white rounded-xl font-semibold hover:bg-gray-700 transition-all"
-                >
-                  Back
-                </button>
-                <GradientButton 
-                  onClick={handleFinalSubmit} 
-                  className="flex-1"
-                  data-testid="signup-finish-btn"
-                >
-                  Get Started
-                </GradientButton>
-              </div>
-            </>
-          )}
-
-          {step === 1 && (
+              <GradientButton type="submit" className="w-full mt-5" data-testid="signup-continue-btn">
+                Create Account
+              </GradientButton>
+            </form>
             <div className="mt-6 text-center">
               <p className="text-gray-400">
                 Already have an account?{' '}
@@ -176,7 +142,7 @@ const Signup = () => {
                 </Link>
               </p>
             </div>
-          )}
+          </>
         </Card>
       </div>
     </div>
