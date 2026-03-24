@@ -18,6 +18,7 @@ import SoloTaskTracker from './pages/SoloTaskTracker';
 import HabitTracker from './pages/HabitTracker';
 import DailyTaskTracker from './pages/DailyTaskTracker';
 import FocusRoom from './pages/FocusRoom';
+import Library from './pages/Library';
 
 function App() {
   return (
@@ -43,6 +44,8 @@ function App() {
           <Route path="/goals" element={<Goals />} />
           <Route path="/future" element={<FutureTwin />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/library" element={<Library />} />
+
         </Route>
         
         {/* Fallback */}

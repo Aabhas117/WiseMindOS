@@ -3,22 +3,24 @@ import { Play, Pause, RotateCcw, X } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import Card from '../components/Card';
 import TaskItem from '../components/TaskItem';
+import { motion } from 'framer-motion'
+import Bag from '../components/Bag';
 
 const FocusRoom = () => {
   const { tasks, toggleTaskCompletion, deleteTask } = useApp();
-  
+
   // Pomodoro Timer State
   const [minutes, setMinutes] = useState(25);
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [mode, setMode] = useState('work'); // work, shortBreak, longBreak
   const [pomodoroCount, setPomodoroCount] = useState(0);
-  
+
   // Notes State
-  const [notes, setNotes] = useState(() => {
-    const saved = localStorage.getItem('wisemind_focus_notes');
-    return saved || '';
-  });
+  // const [notes, setNotes] = useState(() => {
+  //   const saved = localStorage.getItem('wisemind_focus_notes');
+  //   return saved || '';
+  // });
 
   useEffect(() => {
     let interval = null;
@@ -42,17 +44,17 @@ const FocusRoom = () => {
     return () => clearInterval(interval);
   }, [isActive, minutes, seconds]);
 
-  useEffect(() => {
-    localStorage.setItem('wisemind_focus_notes', notes);
-  }, [notes]);
+  // useEffect(() => {
+  //   localStorage.setItem('wisemind_focus_notes', notes);
+  // }, [notes]);
 
   const handleTimerComplete = () => {
     setIsActive(false);
-    
+
     if (mode === 'work') {
       const newCount = pomodoroCount + 1;
       setPomodoroCount(newCount);
-      
+
       // After 4 pomodoros, long break
       if (newCount % 4 === 0) {
         setMode('longBreak');
@@ -65,9 +67,9 @@ const FocusRoom = () => {
       setMode('work');
       setMinutes(25);
     }
-    
+
     setSeconds(0);
-    
+
     // Play notification sound (optional)
     if ('Notification' in window && Notification.permission === 'granted') {
       new Notification('Timer Complete!', {
@@ -78,7 +80,7 @@ const FocusRoom = () => {
 
   const toggleTimer = () => {
     setIsActive(!isActive);
-    
+
     // Request notification permission
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
@@ -117,49 +119,69 @@ const FocusRoom = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 pb-20 px-4 pt-6">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black pb-20 px-4 pt-6 relative overflow-hidden">
+      <motion.div
+        className="absolute top-10 left-10 w-72 h-72 bg-red-500 rounded-full blur-3xl opacity-10"
+        animate={{ x: [0, 30, 0], y: [0, 20, 0] }}
+        transition={{ duration: 12, repeat: Infinity }}
+      />
+
+      <motion.div
+        className="absolute bottom-10 right-10 w-72 h-72 bg-indigo-500 rounded-full blur-3xl opacity-10"
+        animate={{ x: [0, -30, 0], y: [0, -20, 0] }}
+        transition={{ duration: 14, repeat: Infinity }}
+      />
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Focus Room</h1>
+          <motion.h1
+            className="text-3xl md:text-4xl young-serif-regular font-extrabold text-white mb-2"
+            animate={{
+              textShadow: [
+                "0px 0px 0px rgba(99,102,241,0)",
+                "0px 0px 15px rgba(99,102,241,0.6)",
+                "0px 0px 0px rgba(99,102,241,0)"
+              ]
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            Focus Room
+          </motion.h1>
           <p className="text-gray-400">Minimize distractions, maximize productivity</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Timer Section */}
           <div className="lg:col-span-2">
-            <Card className="text-center">
+            <Card className="relative overflow-hidden text-center bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(99,102,241,0.2)]">
               {/* Mode Selector */}
               <div className="flex justify-center gap-2 mb-6">
                 <button
                   onClick={() => switchMode('work')}
-                  className={`px-4 py-2 rounded-lg transition-all ${
-                    mode === 'work'
-                      ? 'bg-red-600 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
+                  className={`px-4 py-2 rounded-lg border cursor-pointer border-white/10 transition-all duration-300 ${mode === 'work'
+                    ? 'bg-red-600 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)]'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
                   data-testid="mode-work"
                 >
                   Work
                 </button>
                 <button
                   onClick={() => switchMode('shortBreak')}
-                  className={`px-4 py-2 rounded-lg transition-all ${
-                    mode === 'shortBreak'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
+                  className={`px-4 py-2 rounded-lg border cursor-pointer border-white/10 transition-all duration-300 ${mode === 'shortBreak'
+                    ? 'bg-green-600 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
                   data-testid="mode-short-break"
                 >
                   Short Break
                 </button>
                 <button
                   onClick={() => switchMode('longBreak')}
-                  className={`px-4 py-2 rounded-lg transition-all ${
-                    mode === 'longBreak'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
+                  className={`px-4 py-2 rounded-lg border cursor-pointer border-white/10 transition-all duration-300 ${mode === 'longBreak'
+                    ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
                   data-testid="mode-long-break"
                 >
                   Long Break
@@ -167,20 +189,30 @@ const FocusRoom = () => {
               </div>
 
               {/* Timer Display */}
-              <div className={`bg-gradient-to-r ${getModeColor()} rounded-2xl p-12 mb-6`}>
-                <p className="text-white text-xl mb-4">{getModeText()}</p>
-                <div className="text-8xl font-bold text-white mb-4" data-testid="timer-display">
-                  {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+              <motion.div
+                animate={{ scale: isActive ? [1, 1.02, 1] : 1 }}
+                transition={{ duration: 1, repeat: isActive ? Infinity : 0 }}
+              >
+                {/* Timer */}
+
+                <div className={`bg-gradient-to-r ${getModeColor()} rounded-2xl p-12 mb-6`}>
+                  <p className="text-white text-xl mb-4">{getModeText()}</p>
+                  <div className="text-8xl font-bold text-white mb-4" data-testid="timer-display">
+                    {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                  </div>
+                  <p className="text-white mt-4 text-sm">
+                    Completed Sessions: <span className="text-white font-semibold">{pomodoroCount}</span>
+                  </p>
                 </div>
-                <p className="text-white/80 text-sm">Pomodoros completed: {pomodoroCount}</p>
-              </div>
+              </motion.div>
 
               {/* Timer Controls */}
               <div className="flex justify-center gap-4">
                 <button
                   onClick={toggleTimer}
                   data-testid="timer-toggle"
-                  className={`bg-gradient-to-r ${getModeColor()} hover:opacity-90 text-white px-8 py-4 rounded-xl transition-all flex items-center gap-2 text-lg font-semibold`}
+                  className={`bg-gradient-to-r ${getModeColor()} hover:opacity-90 text-white px-8 py-4 rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.5)] 
+hover:scale-105 cursor-pointer active:scale-95 transition-all flex items-center gap-2 text-lg font-semibold`}
                 >
                   {isActive ? (
                     <>
@@ -197,7 +229,8 @@ const FocusRoom = () => {
                 <button
                   onClick={resetTimer}
                   data-testid="timer-reset"
-                  className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-4 rounded-xl transition-all"
+                  className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-4 rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.5)] 
+hover:scale-110 active:scale-95 cursor-pointer transition-all"
                 >
                   <RotateCcw size={24} />
                 </button>
@@ -205,27 +238,35 @@ const FocusRoom = () => {
             </Card>
 
             {/* Notes Section */}
-            <Card className="mt-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-white">Focus Notes</h2>
-                {notes && (
-                  <button
-                    onClick={() => setNotes('')}
-                    className="text-gray-400 hover:text-gray-300 text-sm"
-                    data-testid="clear-notes"
-                  >
-                    <X size={18} className="inline" /> Clear
-                  </button>
-                )}
+            {/* Focus Workspace */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mt-6"
+            >
+
+              {/* 🧠 BAG (MAIN AREA) */}
+              <div>
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-[0_0_40px_rgba(99,102,241,0.15)] h-[92vh] flex flex-col">
+
+                  <div className="flex justify-between items-center mb-3">
+                    <h2 className="text-white text-lg font-semibold">
+                      Focus Notes
+                    </h2>
+                    <span className="text-xs text-gray-400">
+                      Deep Work Mode
+                    </span>
+                  </div>
+
+                  {/* Bag */}
+                  <div className="flex-1 min-h-0">
+                    <Bag />
+                  </div>
+
+                </div>
               </div>
-              <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Write your thoughts, ideas, or focus notes here..."
-                data-testid="focus-notes"
-                className="w-full bg-gray-700 text-white border border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[150px] resize-none"
-              />
-            </Card>
+            </motion.div>
           </div>
 
           {/* Today's Tasks */}
@@ -234,13 +275,20 @@ const FocusRoom = () => {
               <h2 className="text-xl font-bold text-white mb-4">Today's Tasks</h2>
               {todayTasks.length > 0 ? (
                 <div className="space-y-3">
-                  {todayTasks.map(task => (
-                    <TaskItem
+                  {todayTasks.map((task, index) => (
+                    <motion.div
                       key={task.id}
-                      task={task}
-                      onToggle={toggleTaskCompletion}
-                      onDelete={deleteTask}
-                    />
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <TaskItem
+                        key={task.id}
+                        task={task}
+                        onToggle={toggleTaskCompletion}
+                        onDelete={deleteTask}
+                      />
+                    </motion.div>
                   ))}
                 </div>
               ) : (
