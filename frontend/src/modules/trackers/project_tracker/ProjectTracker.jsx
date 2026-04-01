@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ArrowLeft, Target } from 'lucide-react';
-import { useApp } from '../store/AppContext';
-import Card from '../components/Card';
-import ProjectCard from '../components/ProjectCard';
-import GradientButton from '../components/GradientButton';
-import InputField from '../components/InputField';
-import Modal from '../components/Modal';
-import TaskItem from '../components/TaskItem';
-import DonutChart from '../components/DonutChart';
+import { useApp } from '../../../store/AppContext';
+import Card from '../../../components/Card';
+import ProjectCard from '../../../components/ProjectCard';
+import GradientButton from '../../../components/GradientButton';
+import InputField from '../../../components/InputField';
+import Modal from '../../../components/Modal';
+import TaskItem from '../../../components/TaskItem';
+import DonutChart from '../../../components/DonutChart';
 import { motion } from 'framer-motion';
 
 const ProjectTracker = () => {

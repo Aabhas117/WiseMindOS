@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ArrowLeft, ChevronRight, Target } from 'lucide-react';
-import { useApp } from '../store/AppContext';
-import Card from '../components/Card';
-import DonutChart from '../components/DonutChart';
-import GoalCard from '../components/GoalCard';
-import GradientButton from '../components/GradientButton';
-import InputField from '../components/InputField';
-import Modal from '../components/Modal';
-import TaskItem from '../components/TaskItem';
-import ProjectCard from '../components/ProjectCard';
+import { useApp } from '../../../store/AppContext';
+import Card from '../../../components/Card';
+import DonutChart from '../../../components/DonutChart';
+import GoalCard from '../../../components/GoalCard';
+import GradientButton from '../../../components/GradientButton';
+import InputField from '../../../components/InputField';
+import Modal from '../../../components/Modal';
+import TaskItem from '../../../components/TaskItem';
+import ProjectCard from '../../../components/ProjectCard';
 import { motion } from 'framer-motion';
 
 const GoalTracker = () => {

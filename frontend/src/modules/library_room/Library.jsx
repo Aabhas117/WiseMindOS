@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import Bag from "../components/Bag";
+import Bag from "../../components/Bag";
 
 const Library = () => {
   return (

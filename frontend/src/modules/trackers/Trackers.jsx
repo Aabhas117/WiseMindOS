@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Target, Folder, CheckSquare, Repeat, Calendar } from 'lucide-react';
-import Card from '../components/Card';
+import Card from '../../components/Card';
 import { motion } from 'framer-motion';
 
 const Trackers = () => {

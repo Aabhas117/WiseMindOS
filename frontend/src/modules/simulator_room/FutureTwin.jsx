@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Sparkles, CheckCircle, XCircle, Lightbulb, TrendingUp, AlertTriangle } from 'lucide-react';
-import Card from '../components/Card';
-import GradientButton from '../components/GradientButton';
-import { futureTwinMockResponse } from '../data/mockData';
+import Card from '../../components/Card';
+import GradientButton from '../../components/GradientButton';
+import { futureTwinMockResponse } from '../../data/mockData';
 import { motion } from 'framer-motion';
-import FutureTwinPic from '../assets/digitwin.png'
+import FutureTwinPic from '../../assets/digitwin.png'
 
 const FutureTwin = () => {
   const [query, setQuery] = useState('');

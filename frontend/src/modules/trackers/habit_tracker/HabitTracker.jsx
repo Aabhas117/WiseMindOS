@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Plus, TrendingUp, TrendingDown, Flame } from 'lucide-react';
-import { useApp } from '../store/AppContext';
-import Card from '../components/Card';
-import HabitCard from '../components/HabitCard';
-import GradientButton from '../components/GradientButton';
-import InputField from '../components/InputField';
-import Modal from '../components/Modal';
+import { useApp } from '../../../store/AppContext';
+import Card from '../../../components/Card';
+import HabitCard from '../../../components/HabitCard';
+import GradientButton from '../../../components/GradientButton';
+import InputField from '../../../components/InputField';
+import Modal from '../../../components/Modal';
 import { motion } from 'framer-motion';
 
 const HabitTracker = () => {

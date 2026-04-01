@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Play, Pause, RotateCcw, X } from 'lucide-react';
-import { useApp } from '../store/AppContext';
-import Card from '../components/Card';
-import TaskItem from '../components/TaskItem';
+import { useApp } from '../../store/AppContext';
+import Card from '../../components/Card';
+import TaskItem from '../../components/TaskItem';
 import { motion } from 'framer-motion'
-import Bag from '../components/Bag';
+import Bag from '../../components/Bag';
 
 const FocusRoom = () => {
   const { tasks, toggleTaskCompletion, deleteTask } = useApp();

@@ -3,22 +3,20 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
-import Goals from './pages/Goals';
-import FutureTwin from './pages/FutureTwin';
-import Reports from './pages/Reports';
+import FutureTwin from './modules/simulator_room/FutureTwin';
 import AppLayout from './layouts/AppLayout';
 import './App.css';
 
 import Onboarding from './pages/Onboarding';
 
-import Trackers from './pages/Trackers';
-import GoalTracker from './pages/GoalTracker';
-import ProjectTracker from './pages/ProjectTracker';
-import SoloTaskTracker from './pages/SoloTaskTracker';
-import HabitTracker from './pages/HabitTracker';
-import DailyTaskTracker from './pages/DailyTaskTracker';
-import FocusRoom from './pages/FocusRoom';
-import Library from './pages/Library';
+import Trackers from './modules/trackers/Trackers';
+import GoalTracker from './modules/trackers/goal_tracker/GoalTracker';
+import ProjectTracker from './modules/trackers/project_tracker/ProjectTracker';
+import SoloTaskTracker from './modules/trackers/solo_task_tracker/SoloTaskTracker';
+import HabitTracker from './modules/trackers/habit_tracker/HabitTracker';
+import DailyTaskTracker from './modules/trackers/daily_task_tracker/DailyTaskTracker';
+import FocusRoom from './modules/focus_room/FocusRoom';
+import Library from './modules/library_room/Library';
 
 function App() {
   return (
@@ -41,9 +39,7 @@ function App() {
           <Route path="/trackers/daily-tasks" element={<DailyTaskTracker />} />
           <Route path="/focus-room" element={<FocusRoom />} />
           <Route path="/future-twin" element={<FutureTwin />} />
-          <Route path="/goals" element={<Goals />} />
           <Route path="/future" element={<FutureTwin />} />
-          <Route path="/reports" element={<Reports />} />
           <Route path="/library" element={<Library />} />
 
         </Route>

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Calendar, Clock, Sparkles } from 'lucide-react';
-import { useApp } from '../store/AppContext';
-import Card from '../components/Card';
-import TaskItem from '../components/TaskItem';
-import DonutChart from '../components/DonutChart';
-import GradientButton from '../components/GradientButton';
+import { useApp } from '../../../store/AppContext';
+import Card from '../../../components/Card';
+import TaskItem from '../../../components/TaskItem';
+import DonutChart from '../../../components/DonutChart';
+import GradientButton from '../../../components/GradientButton';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 
