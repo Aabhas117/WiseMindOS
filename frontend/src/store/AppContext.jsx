@@ -17,6 +17,13 @@ export const AppProvider = ({ children }) => {
   const navigate = useNavigate();
   const backendURL = import.meta.env.VITE_BACKEND_URL;
 
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
+
   // Load initial data from localStorage or use defaults
   const [goals, setGoals] = useState(() => {
     const saved = localStorage.getItem('wisemind_goals');

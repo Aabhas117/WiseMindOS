@@ -17,13 +17,16 @@ import HabitTracker from './modules/trackers/habit_tracker/HabitTracker';
 import DailyTaskTracker from './modules/trackers/daily_task_tracker/DailyTaskTracker';
 import FocusRoom from './modules/focus_room/FocusRoom';
 import Library from './modules/library_room/Library';
+import { useApp } from './store/AppContext';
 
 function App() {
+  const { token } = useApp();
   return (
+
     
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={token ? <Dashboard /> : <Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/onboarding" element={<Onboarding />} />

@@ -5,10 +5,12 @@ import GradientButton from '../components/GradientButton';
 import Card from '../components/Card';
 import { validateEmail } from '../utils/helpers';
 import { motion } from 'framer-motion'
+import { useApp } from '../store/AppContext';
+import axios from 'axios';
 
 
 const Signup = () => {
-  const navigate = useNavigate();
+  const { token, setToken, navigate, backendURL } = useApp();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -17,7 +19,7 @@ const Signup = () => {
   });
   const [error, setError] = useState('');
 
-  const handleSignUpSubmit = (e) => {
+  const handleSignUpSubmit = async(e) => {
     e.preventDefault();
     setError('');
 
@@ -34,6 +36,21 @@ const Signup = () => {
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
+    }
+
+    try {
+
+      const response = await axios.post(backendURL + '/api/user/register', formData)
+      if(response.data.success){
+        console.log(response.data);
+        setToken(response.data.token)
+        localStorage.setItem('token', response.data.token)
+      } else{
+        console.log(response.data.message)
+      }
+      
+    } catch (error) {
+      console.log(error);
     }
 
     localStorage.setItem('wisemind_user', JSON.stringify({
