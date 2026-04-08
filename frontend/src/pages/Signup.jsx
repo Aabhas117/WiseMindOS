@@ -7,10 +7,11 @@ import { validateEmail } from '../utils/helpers';
 import { motion } from 'framer-motion'
 import { useApp } from '../store/AppContext';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 
 const Signup = () => {
-  const { token, setToken, navigate, backendURL } = useApp();
+  const { token, setToken, setUser, navigate, backendURL } = useApp();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -45,21 +46,27 @@ const Signup = () => {
         console.log(response.data);
         setToken(response.data.token)
         localStorage.setItem('token', response.data.token)
+        // SAVE USER DATA
+        const userData = response.data.user || { 
+          name: formData.name, 
+          email: formData.email 
+        };
+        setUser(userData);
+        localStorage.setItem('wisemind_user', JSON.stringify(userData));
+        navigate('/onboarding')
       } else{
-        console.log(response.data.message)
+        toast.error(response.data.message)
       }
       
     } catch (error) {
       console.log(error);
     }
 
-    localStorage.setItem('wisemind_user', JSON.stringify({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-    }));
-
-    navigate('/onboarding')
+    // localStorage.setItem('wisemind_user', JSON.stringify({
+    //   name: formData.name,
+    //   email: formData.email,
+    //   password: formData.password,
+    // }));
   };
 
 

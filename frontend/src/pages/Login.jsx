@@ -7,17 +7,18 @@ import { validateEmail } from '../utils/helpers';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useApp } from '../store/AppContext';
+import { toast } from 'react-toastify';
 
 
 const Login = () => {
-  const { token, setToken, navigate, backendURL } = useApp()
+  const { token, setToken, user, setUser, navigate, backendURL } = useApp()
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [error, setError] = useState('');
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -37,30 +38,44 @@ const Login = () => {
     try {
 
       const response = await axios.post(backendURL + '/api/user/login', formData)
-      if(response.data.success){
+      if (response.data.success) {
         setToken(response.data.token)
         localStorage.setItem('token', response.data.token)
-      } else{
+        // const hasOnboarded = localStorage.getItem('wisemind_hasOnboarded');
+        // if (hasOnboarded === 'true') {
+        //   navigate('/dashboard');
+        // } else {
+        //   navigate('/onboarding');
+        // }
+
+        // SAVE USER DATA
+        const userData = response.data.user || { 
+          name: response.data.name || 'User', 
+          email: formData.email 
+        };
+        setUser(userData);
+        localStorage.setItem('wisemind_user', JSON.stringify(userData));
+
+        navigate('/dashboard');
+      } else {
         toast.error(response.data.message)
       }
-      
+
     } catch (error) {
-      console.log(error)
+      console.log(error);
+      toast.error(error.message);
     }
-
-    
-
     // Check if user has completed onboarding
-    const hasOnboarded = localStorage.getItem('wisemind_hasOnboarded');
-    if (hasOnboarded === 'true') {
-      navigate('/dashboard');
-    } else {
-      navigate('/onboarding');
-    }
+    // const hasOnboarded = localStorage.getItem('wisemind_hasOnboarded');
+    // if (hasOnboarded === 'true') {
+    //   navigate('/dashboard');
+    // } else {
+    //   navigate('/onboarding');
+    // }
   };
 
-  useEffect(()=>{
-    if(token){
+  useEffect(() => {
+    if (token) {
       navigate('/');
     }
   }, [token])
@@ -82,7 +97,7 @@ const Login = () => {
         <div className="text-center mb-8">
           <Link to="/">
             <motion.h1 className="text-4xl young-serif-regular font-bold text-white mb-2"
-            animate={{
+              animate={{
                 textShadow: [
                   "0px 0px 0px rgba(99,102,241,0)",        // no glow
                   "0px 0px 20px rgba(99,102,241,0.8)",     // glow

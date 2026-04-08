@@ -15,15 +15,18 @@ import { motion } from 'framer-motion'
 import { useMemo } from 'react';
 
 const Dashboard = () => {
-  const user = JSON.parse(localStorage.getItem('wisemind_user') || '{}');
+  // const user = JSON.parse(localStorage.getItem('wisemind_user') || '{}');
   const {
     goals,
+    user,
     projects,
     tasks,
     habits,
     scores,
+    dailyPlan,
     calculateGoalProgress,
     calculateProjectProgress,
+    toggleDailyPlanTaskCompletion,
     getImportantTasks,
     getBehindTasks,
     toggleTaskCompletion,
@@ -38,6 +41,11 @@ const Dashboard = () => {
 
   const productivityScore = useMemo(() => calculateProductivityScore(), [tasks, habits, goals]);
   const disciplineScore = useMemo(() => calculateDisciplineScore(), [tasks, habits]);
+
+  // Get today's planned tasks from dailyPlan
+  const todayPlannedTasks = dailyPlan?.plannedTasks || [];
+  const pendingPlannedTasks = todayPlannedTasks.filter(t => !t.completed);
+  const hasPlannedTasks = todayPlannedTasks.length > 0;
 
   // Weekly mock data for charts
   const weeklyData = [
@@ -179,9 +187,8 @@ const Dashboard = () => {
             </h2>
             <div className="space-y-3">
               {importantTasks.slice(0, 4).map(task => (
-                <motion.div whileHover={{ scale: 1.02 }}>
+                <motion.div key={task.id} whileHover={{ scale: 1.02 }}>
                   <TaskItem
-                    key={task.id}
                     task={task}
                     onToggle={toggleTaskCompletion}
                   />
@@ -198,28 +205,100 @@ const Dashboard = () => {
         )}
 
         {/* Today's Tasks */}
-        {todayTasks.length > 0 && (
+        {hasPlannedTasks ? (
           <Card className="mb-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-white">Today's Task Checklist</h2>
+              {/* <h2 className="text-xl font-bold text-white">Today's Task Checklist</h2> */}
+              <h2 className="text-xl font-bold text-white">Today's Planned Tasks</h2>
               <Link to="/trackers/daily-tasks" className="text-indigo-400 hover:text-indigo-300 text-sm">
                 View All
               </Link>
             </div>
             <div className="space-y-3">
-              {todayTasks.slice(0, 5).map(task => (
-                <motion.div whileHover={{ scale: 1.02 }}>
+              {/* {todayTasks.slice(0, 5).map(task => (
+                <motion.div key={task.id} whileHover={{ scale: 1.02 }}>
                   <TaskItem
-                    key={task.id}
                     task={task}
                     onToggle={toggleTaskCompletion}
-                  />
+                  /> */}
+              {pendingPlannedTasks.slice(0, 5).map((item, index) => (
+                <motion.div 
+                  key={item.id} 
+                  whileHover={{ scale: 1.02 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="p-3 bg-white/5 rounded-lg border border-white/10 hover:border-indigo-500/50 transition-all"
+                  data-testid={`planned-task-${item.id}`}
+                >
+                  <div className="flex items-start gap-3">
+                    {/* Time */}
+                    <div className="text-center min-w-[60px]">
+                      <p className="text-xs text-indigo-400 font-semibold">{item.startTime}</p>
+                      <p className="text-xs text-gray-500">{item.endTime}</p>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <h4 className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+                            {item.title}
+                          </h4>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className={`text-xs px-2 py-0.5 rounded-full border ${
+                              item.source === 'task' 
+                                ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                                : item.source === 'habit'
+                                ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                                : 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                            }`}>
+                              {item.source === 'task' ? 'Task' : item.source === 'habit' ? 'Habit' : 'Manual'}
+                            </span>
+                            {item.isImportant && (
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                                Important
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Completion Toggle */}
+                        <button
+                          onClick={() => toggleDailyPlanTaskCompletion(item.id)}
+                          className={`p-2 rounded-lg transition-all ${
+                            item.completed
+                              ? 'bg-green-500/20 text-green-400'
+                              : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
+                          }`}
+                          data-testid={`toggle-planned-task-${item.id}`}
+                        >
+                          <CheckCircle size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
               <Link to="/focus-room">
                 <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
                   <span>Enter Focus Room</span>
                   <ArrowRight size={20} />
+                </GradientButton>
+              </Link>
+            </div>
+          </Card>
+        ) : (
+          <Card className="mb-6 bg-gradient-to-r from-indigo-600/10 to-purple-600/10 border-indigo-500/30">
+            <div className="text-center py-8">
+              <div className="text-5xl mb-3">📅</div>
+              <h3 className="text-xl font-bold text-white mb-2">Plan Your Day to Stay Productive</h3>
+              <p className="text-gray-400 mb-4">
+                Create a structured daily plan to maximize your productivity
+              </p>
+              <Link to="/trackers/daily-tasks">
+                <GradientButton data-testid="plan-now-btn">
+                  Plan Now
                 </GradientButton>
               </Link>
             </div>
@@ -234,9 +313,8 @@ const Dashboard = () => {
             </h2>
             <div className="space-y-3">
               {behindTasks.slice(0, 4).map(task => (
-                <motion.div whileHover={{ scale: 1.02 }}>
+                <motion.div key={task.id} whileHover={{ scale: 1.02 }}>
                   <TaskItem
-                    key={task.id}
                     task={task}
                     onToggle={toggleTaskCompletion}
                   />

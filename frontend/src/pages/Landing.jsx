@@ -159,12 +159,13 @@ const Landing = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <motion.div
+                key={index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
 
-                <Card key={index} className="bg-white/5 backdrop-blur-lg border border-white/10 
+                <Card className="bg-white/5 backdrop-blur-lg border border-white/10 
 hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer">
                   <div className="p-3 bg-indigo-500/20 rounded-lg w-fit mb-4 text-indigo-400">{feature.icon}</div>
                   <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
@@ -193,12 +194,13 @@ hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer">
               { step: '04', title: 'Achieve Goals', desc: 'Stay consistent and watch your goals become reality' }
             ].map((item, index) => (
               <motion.div
+                key={index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
 
-                <div key={index} className="flex items-start gap-6 p-2 rounded-3xl cursor-pointer 
+                <div className="flex items-start gap-6 p-2 rounded-3xl cursor-pointer 
 bg-white/5 backdrop-blur-lg border border-white/10 
 hover:scale-[1.02] hover:bg-white/10 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]">
                   <div className='p-4 flex items-start gap-6'>

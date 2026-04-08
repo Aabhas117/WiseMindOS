@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Play, Pause, RotateCcw, X } from 'lucide-react';
+import { Play, Pause, RotateCcw, X, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useApp } from '../../store/AppContext';
 import Card from '../../components/Card';
 import TaskItem from '../../components/TaskItem';
 import { motion } from 'framer-motion'
 import Bag from '../../components/Bag';
+import GradientButton from '../../components/GradientButton';
 
 const FocusRoom = () => {
-  const { tasks, toggleTaskCompletion, deleteTask } = useApp();
+  const { dailyPlan, toggleDailyPlanTaskCompletion, navigate } = useApp();
 
   // Pomodoro Timer State
   const [minutes, setMinutes] = useState(25);
@@ -104,7 +105,12 @@ const FocusRoom = () => {
     else setMinutes(15);
   };
 
-  const todayTasks = tasks.filter(t => !t.completed).slice(0, 5);
+  // const todayTasks = tasks.filter(t => !t.completed).slice(0, 5);
+
+    // Get today's planned tasks from dailyPlan
+  const todayPlannedTasks = dailyPlan?.plannedTasks || [];
+  const pendingPlannedTasks = todayPlannedTasks.filter(t => !t.completed).slice(0, 8);
+  const hasPlannedTasks = todayPlannedTasks.length > 0;
 
   const getModeColor = () => {
     if (mode === 'work') return 'from-red-600 to-orange-600';
@@ -116,6 +122,12 @@ const FocusRoom = () => {
     if (mode === 'work') return 'Focus Time';
     if (mode === 'shortBreak') return 'Short Break';
     return 'Long Break';
+  };
+
+   const getSourceBadge = (source) => {
+    if (source === 'task') return { label: 'Task', color: 'bg-blue-500/20 text-blue-400' };
+    if (source === 'habit') return { label: 'Habit', color: 'bg-green-500/20 text-green-400' };
+    return { label: 'Manual', color: 'bg-purple-500/20 text-purple-400' };
   };
 
   return (
@@ -272,29 +284,77 @@ hover:scale-110 active:scale-95 cursor-pointer transition-all"
           {/* Today's Tasks */}
           <div className="lg:col-span-1">
             <Card>
-              <h2 className="text-xl font-bold text-white mb-4">Today's Tasks</h2>
+
+              {/* <h2 className="text-xl font-bold text-white mb-4">Today's Tasks</h2>
               {todayTasks.length > 0 ? (
                 <div className="space-y-3">
-                  {todayTasks.map((task, index) => (
+                  {todayTasks.map((task, index) => ( */}
+
+              <h2 className="text-xl font-bold text-white mb-4">Today's Planned Tasks</h2>
+              {hasPlannedTasks ? (
+                <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                  {pendingPlannedTasks.map((item, index) => (
                     <motion.div
-                      key={task.id}
+                      key={item.id}
                       initial={{ opacity: 0, y: 10 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="p-3 bg-white/5 rounded-lg border border-white/10 hover:border-indigo-500/50 transition-all"
+                      data-testid={`focus-task-${item.id}`}
                     >
-                      <TaskItem
+                      {/* <TaskItem
                         key={task.id}
                         task={task}
                         onToggle={toggleTaskCompletion}
                         onDelete={deleteTask}
-                      />
+                      /> */}
+
+                      <div className="flex items-start gap-2">
+                        {/* Time */}
+                        <div className="text-center min-w-[50px]">
+                          <p className="text-xs text-indigo-400 font-semibold">{item.startTime}</p>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1">
+                          <h4 className={`text-sm font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+                            {item.title}
+                          </h4>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${getSourceBadge(item.source).color} inline-block mt-1`}>
+                            {getSourceBadge(item.source).label}
+                          </span>
+                        </div>
+
+                        {/* Completion Toggle */}
+                        <button
+                          onClick={() => toggleDailyPlanTaskCompletion(item.id)}
+                          className={`p-2 rounded-lg transition-all flex-shrink-0 ${
+                            item.completed
+                              ? 'bg-green-500/20 text-green-400'
+                              : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
+                          }`}
+                          data-testid={`toggle-focus-task-${item.id}`}
+                        >
+                          <CheckCircle2 size={18} />
+                        </button>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-gray-400">No pending tasks</p>
-                  <p className="text-sm text-gray-500 mt-2">Great job! 🎉</p>
+                  {/* <p className="text-gray-400">No pending tasks</p>
+                  <p className="text-sm text-gray-500 mt-2">Great job! 🎉</p> */}
+                  <div className="text-4xl mb-3">📅</div>
+                  <p className="text-gray-400 mb-2">No tasks planned yet</p>
+                  <p className="text-sm text-gray-500 mb-4">Plan your day to maximize focus</p>
+                  <button
+                    onClick={() => navigate('/trackers/daily-tasks')}
+                    className="w-full px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
+                    data-testid="plan-day-btn"
+                  >
+                    Plan Your Day
+                  </button>
                 </div>
               )}
             </Card>

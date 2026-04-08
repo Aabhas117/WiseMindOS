@@ -1,16 +1,27 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, ListChecks, Focus, Sparkles, Library } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useApp } from '../store/AppContext';
+import { LogOut } from "lucide-react";
 
 const BottomNav = () => {
   const location = useLocation();
 
+  const { token, setToken, navigate } = useApp();
+
+  const logout = () => {
+    navigate('/login')
+    localStorage.removeItem('token')
+    setToken('')
+  }
+
   const navItems = [
     { path: '/dashboard', icon: Home, label: 'Dashboard' },
     { path: '/trackers', icon: ListChecks, label: 'Trackers' },
-    { path: '/focus-room', icon: Focus, label: 'Focus Room' },
+    { path: '/focus-room', icon: Focus, label: 'Focus' },
     { path: '/future-twin', icon: Sparkles, label: 'FutureTwin' },
     { path: '/library', icon: Library, label: 'Library' },
+    { path: '/login', icon: LogOut, label: 'Log Out' },
   ];
 
   return (
@@ -30,6 +41,12 @@ before:bg-gradient-to-r before:from-indigo-500 before:to-purple-500">
             <Link
               key={item.path}
               to={item.path}
+              onClick={(e) => {
+                if (item.label === "Log Out") {
+                  e.preventDefault(); // stop Link navigation
+                  logout();           // call your function
+                }
+              }}
               className="flex-1 h-full flex items-center justify-center"
             >
               <motion.div
@@ -58,12 +75,12 @@ before:bg-gradient-to-r before:from-indigo-500 before:to-purple-500">
                   transition={{ duration: 0.4 }}
                   className={isActive ? "drop-shadow-[0_0_10px_rgba(99,102,241,0.7)]" : ""}
                 >
-                  {item.path.endsWith("/focus-room") ? <Icon size={30} /> : <Icon size={22} />}
+                  <Icon size={22} />
                 </motion.div>
 
                 {/* Label */}
                 <span className="text-[10px] mt-1">
-                  {item.path.endsWith("/focus-room") ? "" : item.label}
+                  {item.label}
                 </span>
 
               </motion.div>

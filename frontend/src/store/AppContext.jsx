@@ -17,12 +17,26 @@ export const AppProvider = ({ children }) => {
   const navigate = useNavigate();
   const backendURL = import.meta.env.VITE_BACKEND_URL;
 
+  // User state
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('wisemind_user');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       setToken(storedToken);
     }
   }, []);
+
+  // Persist user to localStorage
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('wisemind_user', JSON.stringify(user));
+    }
+  }, [user]);
 
   // Load initial data from localStorage or use defaults
   const [goals, setGoals] = useState(() => {
@@ -50,6 +64,24 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  // NEW: Daily Plan with date-specific structure
+  const [dailyPlan, setDailyPlan] = useState(() => {
+    const saved = localStorage.getItem('wisemind_daily_plan');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      const today = new Date().toISOString().split('T')[0];
+      // Reset if date changed
+      if (parsed.date !== today) {
+        return { date: today, plannedTasks: [] };
+      }
+      return parsed;
+    }
+    return { 
+      date: new Date().toISOString().split('T')[0], 
+      plannedTasks: [] 
+    };
+  });
+
   const [scores, setScores] = useState(() => {
     const saved = localStorage.getItem('wisemind_scores');
     return saved ? JSON.parse(saved) : { productivity: 0, discipline: 0 };
@@ -75,6 +107,10 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('wisemind_daily_tasks', JSON.stringify(dailyTasks));
   }, [dailyTasks]);
+
+   useEffect(() => {
+    localStorage.setItem('wisemind_daily_plan', JSON.stringify(dailyPlan));
+  }, [dailyPlan]);
 
   useEffect(() => {
     localStorage.setItem('wisemind_scores', JSON.stringify(scores));
@@ -144,10 +180,22 @@ export const AppProvider = ({ children }) => {
   };
 
   const toggleTaskCompletion = (taskId) => {
+    // Update main tasks list
     setTasks(tasks.map(task => 
       task.id === taskId ? { ...task, completed: !task.completed } : task
     ));
+
+    // SYNC: Update in dailyPlan if exists
+    setDailyPlan(prev => ({
+      ...prev,
+      plannedTasks: prev.plannedTasks.map(item =>
+        item.taskId === taskId 
+          ? { ...item, completed: !item.completed }
+          : item
+      )
+    }));
     
+    // Legacy: Update old dailyTasks for compatibility 
     setDailyTasks(dailyTasks.map(task =>
       task.id === taskId ? { ...task, completed: !task.completed } : task
     ));
@@ -258,17 +306,145 @@ export const AppProvider = ({ children }) => {
     setDailyTasks(tasksList);
   };
 
+  // ========== DAILY PLAN FUNCTIONS (BIDIRECTIONAL SYNC) ==========
+
+  // Add task to daily plan
+  const addToDailyPlan = (item) => {
+    const newItem = {
+      id: Date.now().toString() + Math.random(),
+      source: item.source, // 'task' | 'habit' | 'manual'
+      taskId: item.taskId || null,
+      habitId: item.habitId || null,
+      title: item.title,
+      startTime: item.startTime || '09:00',
+      endTime: item.endTime || '10:00',
+      completed: item.completed || false,
+      isImportant: item.isImportant || false,
+      ...item
+    };
+
+    setDailyPlan(prev => ({
+      ...prev,
+      plannedTasks: [...prev.plannedTasks, newItem]
+    }));
+
+    return newItem;
+  };
+
+  // Remove from daily plan
+  const removeFromDailyPlan = (id) => {
+    setDailyPlan(prev => ({
+      ...prev,
+      plannedTasks: prev.plannedTasks.filter(item => item.id !== id)
+    }));
+  };
+
+  // Create manual task directly in daily plan
+  const createManualDailyTask = (taskData) => {
+    const newTask = {
+      id: Date.now().toString() + Math.random(),
+      source: 'manual',
+      taskId: null,
+      habitId: null,
+      title: taskData.title,
+      startTime: taskData.startTime || '09:00',
+      endTime: taskData.endTime || '10:00',
+      completed: false,
+      isImportant: taskData.isImportant || false
+    };
+
+    setDailyPlan(prev => ({
+      ...prev,
+      plannedTasks: [...prev.plannedTasks, newTask]
+    }));
+
+    return newTask;
+  };
+
+  // CRITICAL: Bidirectional sync for daily plan task completion
+  const toggleDailyPlanTaskCompletion = (id) => {
+    const item = dailyPlan.plannedTasks.find(t => t.id === id);
+    if (!item) return;
+
+    // Update in daily plan
+    setDailyPlan(prev => ({
+      ...prev,
+      plannedTasks: prev.plannedTasks.map(t =>
+        t.id === id ? { ...t, completed: !t.completed } : t
+      )
+    }));
+
+    // SYNC: Update source
+    if (item.source === 'task' && item.taskId) {
+      // Sync with main tasks
+      setTasks(tasks.map(task =>
+        task.id === item.taskId 
+          ? { ...task, completed: !task.completed }
+          : task
+      ));
+      // Legacy sync
+      setDailyTasks(dailyTasks.map(task =>
+        task.id === item.taskId 
+          ? { ...task, completed: !task.completed }
+          : task
+      ));
+    } else if (item.source === 'habit' && item.habitId) {
+      // Sync with habits
+      const habit = habits.find(h => h.id === item.habitId);
+      if (habit && !item.completed) {
+        // Mark as completed today
+        const today = new Date().toISOString().split('T')[0];
+        setHabits(habits.map(h =>
+          h.id === item.habitId
+            ? {
+                ...h,
+                lastCompleted: today,
+                streak: h.lastCompleted && 
+                  new Date(h.lastCompleted).toISOString().split('T')[0] === 
+                  new Date(Date.now() - 86400000).toISOString().split('T')[0]
+                  ? h.streak + 1
+                  : 1
+              }
+            : h
+        ));
+      }
+    }
+    // Manual tasks: only update in dailyPlan (already done above)
+  };
+
+  // Update daily plan task
+  const updateDailyPlanTask = (id, updates) => {
+    setDailyPlan(prev => ({
+      ...prev,
+      plannedTasks: prev.plannedTasks.map(item =>
+        item.id === id ? { ...item, ...updates } : item
+      )
+    }));
+  };
+
+  // Clear daily plan
+  const clearDailyPlan = () => {
+    const today = new Date().toISOString().split('T')[0];
+    setDailyPlan({ date: today, plannedTasks: [] });
+  };
+
+  // ========== END DAILY PLAN FUNCTIONS ==========
+
   const clearAllData = () => {
     setGoals([]);
     setProjects([]);
     setTasks([]);
     setHabits([]);
     setDailyTasks([]);
+    setDailyPlan({ date: new Date().toISOString().split('T')[0], plannedTasks: [] });
     setScores({ productivity: 0, discipline: 0 });
+    setUser(null);
   };
 
   const value = {
     token,
+    user,
+    setUser,
     setToken,
     navigate,
     backendURL,
@@ -277,6 +453,7 @@ export const AppProvider = ({ children }) => {
     tasks,
     habits,
     dailyTasks,
+    dailyPlan,
     scores,
     addGoal,
     addProject,
@@ -293,6 +470,12 @@ export const AppProvider = ({ children }) => {
     deleteHabit,
     updateScores,
     setDailyTasksList,
+    addToDailyPlan,
+    removeFromDailyPlan,
+    createManualDailyTask,
+    toggleDailyPlanTaskCompletion,
+    updateDailyPlanTask,
+    clearDailyPlan,
     clearAllData,
     calculateGoalProgress,
     calculateProjectProgress,

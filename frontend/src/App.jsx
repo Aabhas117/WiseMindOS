@@ -19,38 +19,41 @@ import FocusRoom from './modules/focus_room/FocusRoom';
 import Library from './modules/library_room/Library';
 import { useApp } from './store/AppContext';
 
-function App() {
-  const { token } = useApp();
-  return (
+import { ToastContainer } from 'react-toastify';
 
-    
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={token ? <Dashboard /> : <Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        
-        {/* Protected Routes with AppLayout */}
-        <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/trackers" element={<Trackers />} />
-          <Route path="/trackers/goals" element={<GoalTracker />} />
-          <Route path="/trackers/projects" element={<ProjectTracker />} />
-          <Route path="/trackers/tasks" element={<SoloTaskTracker />} />
-          <Route path="/trackers/habits" element={<HabitTracker />} />
-          <Route path="/trackers/daily-tasks" element={<DailyTaskTracker />} />
-          <Route path="/focus-room" element={<FocusRoom />} />
-          <Route path="/future-twin" element={<FutureTwin />} />
-          <Route path="/future" element={<FutureTwin />} />
-          <Route path="/library" element={<Library />} />
+  function App() {
+    const { token } = useApp();
+    return (
+      <>
+        <ToastContainer position="top-right" autoClose={3000} />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={token ? <Dashboard /> : <Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/onboarding" element={<Onboarding />} />
 
-        </Route>
-        
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-  );
-}
+          {/* Protected Routes with AppLayout */}
+          <Route element={<AppLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/trackers" element={<Trackers />} />
+            <Route path="/trackers/goals" element={<GoalTracker />} />
+            <Route path="/trackers/projects" element={<ProjectTracker />} />
+            <Route path="/trackers/tasks" element={<SoloTaskTracker />} />
+            <Route path="/trackers/habits" element={<HabitTracker />} />
+            <Route path="/trackers/daily-tasks" element={<DailyTaskTracker />} />
+            <Route path="/focus-room" element={<FocusRoom />} />
+            <Route path="/future-twin" element={<FutureTwin />} />
+            <Route path="/future" element={<FutureTwin />} />
+            <Route path="/library" element={<Library />} />
+
+          </Route>
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </>
+    );
+  }
 
 export default App;
