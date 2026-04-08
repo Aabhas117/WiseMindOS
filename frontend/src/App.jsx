@@ -28,7 +28,7 @@ import { ToastContainer } from 'react-toastify';
         <ToastContainer position="top-right" autoClose={3000} />
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={token ? <Dashboard /> : <Landing />} />
+          <Route path="/" element={token ? <Navigate to="/dashboard" replace /> : <Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/onboarding" element={<Onboarding />} />
