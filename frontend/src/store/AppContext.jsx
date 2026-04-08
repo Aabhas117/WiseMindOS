@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { goalAPI, projectAPI, taskAPI, habitAPI, dailyPlanAPI } from '../api/apiService';
+import { toast } from 'react-toastify';
 
 const AppContext = createContext();
 
@@ -16,6 +18,7 @@ export const AppProvider = ({ children }) => {
   const [token, setToken] = useState('');
   const navigate = useNavigate();
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const [loading, setLoading] = useState(false);
 
   // User state
   const [user, setUser] = useState(() => {
@@ -38,7 +41,7 @@ export const AppProvider = ({ children }) => {
     }
   }, [user]);
 
-  // Load initial data from localStorage or use defaults
+  // HYBRID: Load initial data from localStorage or use defaults (fallback)
   const [goals, setGoals] = useState(() => {
     const saved = localStorage.getItem('wisemind_goals');
     return saved ? JSON.parse(saved) : [];
@@ -76,9 +79,9 @@ export const AppProvider = ({ children }) => {
       }
       return parsed;
     }
-    return { 
-      date: new Date().toISOString().split('T')[0], 
-      plannedTasks: [] 
+    return {
+      date: new Date().toISOString().split('T')[0],
+      plannedTasks: []
     };
   });
 
@@ -87,159 +90,482 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : { productivity: 0, discipline: 0 };
   });
 
-  // Persist to localStorage whenever state changes
-  useEffect(() => {
-    localStorage.setItem('wisemind_goals', JSON.stringify(goals));
-  }, [goals]);
+  // Persist to localStorage whenever state changes (HYBRID - keep for now)
+  // useEffect(() => {
+  //   localStorage.setItem('wisemind_goals', JSON.stringify(goals));
+  // }, [goals]);
 
-  useEffect(() => {
-    localStorage.setItem('wisemind_projects', JSON.stringify(projects));
-  }, [projects]);
+  // useEffect(() => {
+  //   localStorage.setItem('wisemind_projects', JSON.stringify(projects));
+  // }, [projects]);
 
-  useEffect(() => {
-    localStorage.setItem('wisemind_tasks', JSON.stringify(tasks));
-  }, [tasks]);
+  // useEffect(() => {
+  //   localStorage.setItem('wisemind_tasks', JSON.stringify(tasks));
+  // }, [tasks]);
 
-  useEffect(() => {
-    localStorage.setItem('wisemind_habits', JSON.stringify(habits));
-  }, [habits]);
+  // useEffect(() => {
+  //   localStorage.setItem('wisemind_habits', JSON.stringify(habits));
+  // }, [habits]);
 
-  useEffect(() => {
-    localStorage.setItem('wisemind_daily_tasks', JSON.stringify(dailyTasks));
-  }, [dailyTasks]);
+  // useEffect(() => {
+  //   localStorage.setItem('wisemind_daily_tasks', JSON.stringify(dailyTasks));
+  // }, [dailyTasks]);
 
-   useEffect(() => {
-    localStorage.setItem('wisemind_daily_plan', JSON.stringify(dailyPlan));
-  }, [dailyPlan]);
+  //  useEffect(() => {
+  //   localStorage.setItem('wisemind_daily_plan', JSON.stringify(dailyPlan));
+  // }, [dailyPlan]);
 
+  // useEffect(() => {
+  //   localStorage.setItem('wisemind_scores', JSON.stringify(scores));
+  // }, [scores]);
+
+  // REMOVED: localStorage persistence (backend is now source of truth)
+  // Only token and user are persisted locally
+
+
+
+
+  // BACKEND INTEGRATION: Load initial data when token is available
   useEffect(() => {
-    localStorage.setItem('wisemind_scores', JSON.stringify(scores));
-  }, [scores]);
+    if (token && user) {
+      loadInitialData();
+    }
+  }, [token, user]);
+
+  const loadInitialData = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch all data from backend
+      const [goalsRes, projectsRes, tasksRes, habitsRes, dailyPlanRes] = await Promise.all([
+        goalAPI.getAll(),
+        projectAPI.getAll(),
+        taskAPI.getAll(),
+        habitAPI.getAll(),
+        dailyPlanAPI.getToday()
+      ]);
+
+      // Update state with backend data
+      if (goalsRes.success) {
+        const goalsData = goalsRes.goals.map(g => ({
+          ...g,
+          id: g._id
+        }));
+        setGoals(goalsData);
+      }
+
+      if (projectsRes.success) {
+        const projectsData = projectsRes.projects.map(p => ({
+          ...p,
+          id: p._id
+        }));
+        setProjects(projectsData);
+      }
+
+      if (tasksRes.success) {
+        const tasksData = tasksRes.tasks.map(t => ({
+          ...t,
+          id: t._id
+        }));
+        setTasks(tasksData);
+      }
+
+      if (habitsRes.success) {
+        const habitsData = habitsRes.habits.map(h => ({
+          ...h,
+          id: h._id
+        }));
+        setHabits(habitsData);
+      }
+
+      if (dailyPlanRes.success && dailyPlanRes.dailyPlan) {
+        const planData = {
+          ...dailyPlanRes.dailyPlan,
+          plannedTasks: dailyPlanRes.dailyPlan.plannedTasks.map(pt => ({
+            ...pt,
+            id: pt._id,
+            taskId: pt.taskId || null,
+            habitId: pt.habitId || null
+          }))
+        };
+        setDailyPlan(planData);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error('Failed to load data from backend:', error);
+      setLoading(false);
+      // Keep localStorage data as fallback
+      toast.info('Using offline data');
+    }
+  };
 
   // Add Goal
-  const addGoal = (goal) => {
-    const newGoal = {
-      id: Date.now().toString(),
-      title: goal.title,
-      type: goal.type,
-      createdAt: new Date().toISOString(),
-      ...goal
-    };
-    setGoals([...goals, newGoal]);
-    return newGoal;
+  // const addGoal = (goal) => {
+
+  // Add Goal - Backend Integration
+  const addGoal = async (goal) => {
+    try {
+      const response = await goalAPI.create(goal);
+      if (response.success) {
+        const newGoal = {
+          // id: Date.now().toString(),
+          // title: goal.title,
+          // type: goal.type,
+          // createdAt: new Date().toISOString(),
+          // ...goal
+          ...response.goal,
+          id: response.goal._id
+        };
+        setGoals([...goals, newGoal]);
+        toast.success('Goal created successfully');
+        return newGoal;
+      } else {
+        toast.error(response.message || 'Failed to create goal');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error creating goal:', error);
+      toast.error('Failed to create goal');
+      return null;
+    }
   };
 
   // Add Project
-  const addProject = (project) => {
-    const newProject = {
-      id: Date.now().toString(),
-      title: project.title,
-      goalId: project.goalId || null,
-      deadline: project.deadline,
-      createdAt: new Date().toISOString(),
-      ...project
-    };
-    setProjects([...projects, newProject]);
-    return newProject;
+  // const addProject = (project) => {
+
+  // Add Project - Backend Integration
+  const addProject = async (project) => {
+    try {
+      const response = await projectAPI.create(project);
+      if (response.success) {
+        const newProject = {
+          // id: Date.now().toString(),
+          // title: project.title,
+          // goalId: project.goalId || null,
+          // deadline: project.deadline,
+          // createdAt: new Date().toISOString(),
+          // ...project
+          ...response.project,
+          id: response.project._id
+        };
+        setProjects([...projects, newProject]);
+        toast.success('Project created successfully');
+        return newProject;
+      } else {
+        toast.error(response.message || 'Failed to create project');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error creating project:', error);
+      toast.error('Failed to create project');
+      return null;
+    }
   };
 
   // Add Task
-  const addTask = (task) => {
-    const newTask = {
-      id: Date.now().toString() + Math.random(),
-      title: task.title,
-      deadline: task.deadline,
-      completed: false,
-      goalId: task.goalId || null,
-      projectId: task.projectId || null,
-      isImportant: task.isImportant || false,
-      createdFrom: task.createdFrom || 'manual',
-      createdAt: new Date().toISOString(),
-      ...task
-    };
-    setTasks([...tasks, newTask]);
-    return newTask;
+  // const addTask = (task) => {
+  // Add Task - Backend Integration
+  const addTask = async (task) => {
+    try {
+      const response = await taskAPI.create(task);
+      if (response.success) {
+        const newTask = {
+          // id: Date.now().toString() + Math.random(),
+          // title: task.title,
+          // deadline: task.deadline,
+          // completed: false,
+          // goalId: task.goalId || null,
+          // projectId: task.projectId || null,
+          // isImportant: task.isImportant || false,
+          // createdFrom: task.createdFrom || 'manual',
+          // createdAt: new Date().toISOString(),
+          // ...task
+          ...response.task,
+          id: response.task._id
+        };
+        setTasks([...tasks, newTask]);
+        toast.success('Task created successfully');
+        return newTask;
+      } else {
+        toast.error(response.message || 'Failed to create task');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error creating task:', error);
+      toast.error('Failed to create task');
+      return null;
+    }
   };
 
   // Add Habit
-  const addHabit = (habit) => {
-    const newHabit = {
-      id: Date.now().toString(),
-      name: habit.name,
-      type: habit.type,
-      startTime: habit.startTime,
-      endTime: habit.endTime,
-      streak: 0,
-      mode: habit.mode || '21-day',
-      createdAt: new Date().toISOString(),
-      lastCompleted: null,
-      ...habit
-    };
-    setHabits([...habits, newHabit]);
-    return newHabit;
+  // const addHabit = (habit) => {
+  // Add Habit - Backend Integration
+  const addHabit = async (habit) => {
+    try {
+      const response = await habitAPI.create(habit);
+      if (response.success) {
+        const newHabit = {
+          // id: Date.now().toString(),
+          // name: habit.name,
+          // type: habit.type,
+          // startTime: habit.startTime,
+          // endTime: habit.endTime,
+          // streak: 0,
+          // mode: habit.mode || '21-day',
+          // createdAt: new Date().toISOString(),
+          // lastCompleted: null,
+          // ...habit
+          ...response.habit,
+          id: response.habit._id
+        };
+        setHabits([...habits, newHabit]);
+        toast.success('Habit created successfully');
+        return newHabit;
+      } else {
+        toast.error(response.message || 'Failed to create habit');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error creating habit:', error);
+      toast.error('Failed to create habit');
+      return null;
+    }
   };
 
-  const toggleTaskCompletion = (taskId) => {
-    // Update main tasks list
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    ));
+  // const toggleTaskCompletion = (taskId) => {
+  // Update main tasks list
+  // Toggle Task Completion - Backend Integration with Global Sync
+  const toggleTaskCompletion = async (taskId) => {
+    try {
+      // Check if task exists in dailyPlan
+      const isInDailyPlan = dailyPlan.plannedTasks.some(pt => pt.taskId === taskId);
 
-    // SYNC: Update in dailyPlan if exists
-    setDailyPlan(prev => ({
-      ...prev,
-      plannedTasks: prev.plannedTasks.map(item =>
-        item.taskId === taskId 
-          ? { ...item, completed: !item.completed }
-          : item
-      )
-    }));
-    
-    // Legacy: Update old dailyTasks for compatibility 
-    setDailyTasks(dailyTasks.map(task =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    ));
+      if (isInDailyPlan) {
+        // If in daily plan, use dailyPlanAPI.toggle (backend syncs both)
+        const plannedTask = dailyPlan.plannedTasks.find(pt => pt.taskId === taskId);
+        if (plannedTask) {
+          const response = await dailyPlanAPI.toggle(plannedTask.id);
+          if (response.success) {
+            // Update dailyPlan from response
+            const updatedPlan = {
+              ...response.dailyPlan,
+              plannedTasks: response.dailyPlan.plannedTasks.map(pt => ({
+                ...pt,
+                id: pt._id
+              }))
+            };
+            setDailyPlan(updatedPlan);
+
+            // Update tasks array (find completed status from dailyPlan response)
+            const updatedPlannedTask = response.dailyPlan.plannedTasks.find(pt => pt._id === plannedTask.id);
+            if (updatedPlannedTask) {
+              setTasks(tasks.map(task =>
+                task.id === taskId
+                  ? { ...task, completed: updatedPlannedTask.completed }
+                  : task
+              ));
+            }
+          }
+        }
+      } else {
+        // Not in daily plan, use taskAPI.toggle
+        const response = await taskAPI.toggle(taskId);
+        if (response.success) {
+          const updatedTask = {
+            ...response.task,
+            id: response.task._id
+          };
+          setTasks(tasks.map(task =>
+            // task.id === taskId ? { ...task, completed: !task.completed } : task
+            task.id === taskId ? updatedTask : task
+          ));
+
+          // SYNC: Update in dailyPlan if exists
+          // setDailyPlan(prev => ({
+          //   ...prev,
+          //   plannedTasks: prev.plannedTasks.map(item =>
+          //     item.taskId === taskId
+          //       ? { ...item, completed: !item.completed }
+          //       : item
+          //   )
+          // }));
+        }
+      }
+
+      // Legacy: Update old dailyTasks for compatibility 
+      setDailyTasks(dailyTasks.map(task =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      ));
+    } catch (error) {
+      console.error('Error toggling task:', error);
+      toast.error('Failed to update task');
+    }
   };
 
-  const updateTask = (taskId, updates) => {
-    setTasks(tasks.map(task =>
-      task.id === taskId ? { ...task, ...updates } : task
-    ));
+  // const updateTask = (taskId, updates) => {
+  // Update Task - Backend Integration
+  const updateTask = async (taskId, updates) => {
+    try {
+      const response = await taskAPI.update({ taskId, ...updates });
+      if (response.success) {
+        const updatedTask = {
+          ...response.task,
+          id: response.task._id
+        };
+        setTasks(tasks.map(task =>
+          // task.id === taskId ? { ...task, ...updates } : task
+          task.id === taskId ? updatedTask : task
+        ));
+        toast.success('Task updated successfully');
+      } else {
+        toast.error(response.message || 'Failed to update task');
+      }
+    } catch (error) {
+      console.error('Error updating task:', error);
+      toast.error('Failed to update task');
+    }
   };
 
-  const deleteTask = (taskId) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
-    setDailyTasks(dailyTasks.filter(task => task.id !== taskId));
+  // const deleteTask = (taskId) => {
+  // Delete Task - Backend Integration
+  const deleteTask = async (taskId) => {
+    try {
+      const response = await taskAPI.delete(taskId);
+      if (response.success) {
+        setTasks(tasks.filter(task => task.id !== taskId));
+        setDailyTasks(dailyTasks.filter(task => task.id !== taskId));
+        toast.success('Task deleted successfully');
+      } else {
+        toast.error(response.message || 'Failed to delete task');
+      }
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      toast.error('Failed to delete task');
+    }
   };
 
-  const updateGoal = (goalId, updates) => {
-    setGoals(goals.map(goal =>
-      goal.id === goalId ? { ...goal, ...updates } : goal
-    ));
+  // const updateGoal = (goalId, updates) => {
+  // Update Goal - Backend Integration
+  const updateGoal = async (goalId, updates) => {
+    try {
+      const response = await goalAPI.update({ goalId, ...updates });
+      if (response.success) {
+        const updatedGoal = {
+          ...response.goal,
+          id: response.goal._id
+        };
+        setGoals(goals.map(goal =>
+          // goal.id === goalId ? { ...goal, ...updates } : goal
+          goal.id === goalId ? updatedGoal : goal
+        ));
+        toast.success('Goal updated successfully');
+      } else {
+        toast.error(response.message || 'Failed to update goal');
+      }
+    } catch (error) {
+      console.error('Error updating goal:', error);
+      toast.error('Failed to update goal');
+    }
   };
 
-  const deleteGoal = (goalId) => {
-    setGoals(goals.filter(goal => goal.id !== goalId));
+  // const deleteGoal = (goalId) => {
+  // Delete Goal - Backend Integration
+  const deleteGoal = async (goalId) => {
+    try {
+      const response = await goalAPI.delete(goalId);
+      if (response.success) {
+        setGoals(goals.filter(goal => goal.id !== goalId));
+        toast.success('Goal deleted successfully');
+      } else {
+        toast.error(response.message || 'Failed to delete goal');
+      }
+    } catch (error) {
+      console.error('Error deleting goal:', error);
+      toast.error('Failed to delete goal');
+    }
   };
 
-  const updateProject = (projectId, updates) => {
-    setProjects(projects.map(project =>
-      project.id === projectId ? { ...project, ...updates } : project
-    ));
+  // const updateProject = (projectId, updates) => {
+  // Update Project - Backend Integration
+  const updateProject = async (projectId, updates) => {
+    try {
+      const response = await projectAPI.update({ projectId, ...updates });
+      if (response.success) {
+        const updatedProject = {
+          ...response.project,
+          id: response.project._id
+        };
+        setProjects(projects.map(project =>
+          // project.id === projectId ? { ...project, ...updates } : project
+          project.id === projectId ? updatedProject : project
+        ));
+        toast.success('Project updated successfully');
+      } else {
+        toast.error(response.message || 'Failed to update project');
+      }
+    } catch (error) {
+      console.error('Error updating project:', error);
+      toast.error('Failed to update project');
+    }
   };
 
-  const deleteProject = (projectId) => {
-    setProjects(projects.filter(project => project.id !== projectId));
+  // const deleteProject = (projectId) => {
+  // Delete Project - Backend Integration
+  const deleteProject = async (projectId) => {
+    try {
+      const response = await projectAPI.delete(projectId);
+      if (response.success) {
+        setProjects(projects.filter(project => project.id !== projectId));
+        toast.success('Project deleted successfully');
+      } else {
+        toast.error(response.message || 'Failed to delete project');
+      }
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      toast.error('Failed to delete project');
+    }
   };
 
-  const updateHabit = (habitId, updates) => {
-    setHabits(habits.map(habit =>
-      habit.id === habitId ? { ...habit, ...updates } : habit
-    ));
+  // const updateHabit = (habitId, updates) => {
+  // Update Habit - Backend Integration
+  const updateHabit = async (habitId, updates) => {
+    try {
+      const response = await habitAPI.update({ habitId, ...updates });
+      if (response.success) {
+        const updatedHabit = {
+          ...response.habit,
+          id: response.habit._id
+        };
+        setHabits(habits.map(habit =>
+          // habit.id === habitId ? { ...habit, ...updates } : habit
+          habit.id === habitId ? updatedHabit : habit
+        ));
+        toast.success('Habit updated successfully');
+      } else {
+        toast.error(response.message || 'Failed to update habit');
+      }
+    } catch (error) {
+      console.error('Error updating habit:', error);
+      toast.error('Failed to update habit');
+    }
   };
 
-  const deleteHabit = (habitId) => {
-    setHabits(habits.filter(habit => habit.id !== habitId));
+  // const deleteHabit = (habitId) => {
+  // Delete Habit - Backend Integration
+  const deleteHabit = async (habitId) => {
+    try {
+      const response = await habitAPI.delete(habitId);
+      if (response.success) {
+        setHabits(habits.filter(habit => habit.id !== habitId));
+        toast.success('Habit deleted successfully');
+      } else {
+        toast.error(response.message || 'Failed to delete habit');
+      }
+    } catch (error) {
+      console.error('Error deleting habit:', error);
+      toast.error('Failed to delete habit');
+    }
   };
 
   const calculateGoalProgress = (goalId) => {
@@ -306,126 +632,267 @@ export const AppProvider = ({ children }) => {
     setDailyTasks(tasksList);
   };
 
-  // ========== DAILY PLAN FUNCTIONS (BIDIRECTIONAL SYNC) ==========
+
+  // ========== DAILY PLAN FUNCTIONS (BACKEND INTEGRATION) ==========
 
   // Add task to daily plan
-  const addToDailyPlan = (item) => {
-    const newItem = {
-      id: Date.now().toString() + Math.random(),
-      source: item.source, // 'task' | 'habit' | 'manual'
-      taskId: item.taskId || null,
-      habitId: item.habitId || null,
-      title: item.title,
-      startTime: item.startTime || '09:00',
-      endTime: item.endTime || '10:00',
-      completed: item.completed || false,
-      isImportant: item.isImportant || false,
-      ...item
-    };
+  // const addToDailyPlan = (item) => {
+  //   const newItem = {
+  //     id: Date.now().toString() + Math.random(),
+  //     source: item.source, // 'task' | 'habit' | 'manual'
+  //     taskId: item.taskId || null,
+  //     habitId: item.habitId || null,
+  //     title: item.title,
+  //     startTime: item.startTime || '09:00',
+  //     endTime: item.endTime || '10:00',
+  //     completed: item.completed || false,
+  //     isImportant: item.isImportant || false,
+  //     ...item
+  //   };
 
-    setDailyPlan(prev => ({
-      ...prev,
-      plannedTasks: [...prev.plannedTasks, newItem]
-    }));
+  //   setDailyPlan(prev => ({
+  //     ...prev,
+  //     plannedTasks: [...prev.plannedTasks, newItem]
+  //   }));
 
-    return newItem;
+  //   return newItem;
+
+  // Add task to daily plan - Backend Integration
+  const addToDailyPlan = async (item) => {
+    try {
+      const response = await dailyPlanAPI.add(item);
+      if (response.success) {
+        const updatedPlan = {
+          ...response.dailyPlan,
+          plannedTasks: response.dailyPlan.plannedTasks.map(pt => ({
+            ...pt,
+            id: pt._id
+          }))
+        };
+        setDailyPlan(updatedPlan);
+        toast.success('Added to daily plan');
+        return updatedPlan.plannedTasks[updatedPlan.plannedTasks.length - 1];
+      } else {
+        toast.error(response.message || 'Failed to add to daily plan');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error adding to daily plan:', error);
+      toast.error('Failed to add to daily plan');
+      return null;
+    }
   };
 
   // Remove from daily plan
-  const removeFromDailyPlan = (id) => {
-    setDailyPlan(prev => ({
-      ...prev,
-      plannedTasks: prev.plannedTasks.filter(item => item.id !== id)
-    }));
+  // const removeFromDailyPlan = (id) => {
+  //   setDailyPlan(prev => ({
+  //     ...prev,
+  //     plannedTasks: prev.plannedTasks.filter(item => item.id !== id)
+  //   }));
+  // Remove from daily plan - Backend Integration
+  const removeFromDailyPlan = async (id) => {
+    try {
+      const response = await dailyPlanAPI.remove(id);
+      if (response.success) {
+        const updatedPlan = {
+          ...response.dailyPlan,
+          plannedTasks: response.dailyPlan.plannedTasks.map(pt => ({
+            ...pt,
+            id: pt._id
+          }))
+        };
+        setDailyPlan(updatedPlan);
+        toast.success('Removed from daily plan');
+      } else {
+        toast.error(response.message || 'Failed to remove from daily plan');
+      }
+    } catch (error) {
+      console.error('Error removing from daily plan:', error);
+      toast.error('Failed to remove from daily plan');
+    }
   };
 
   // Create manual task directly in daily plan
-  const createManualDailyTask = (taskData) => {
-    const newTask = {
-      id: Date.now().toString() + Math.random(),
-      source: 'manual',
-      taskId: null,
-      habitId: null,
-      title: taskData.title,
-      startTime: taskData.startTime || '09:00',
-      endTime: taskData.endTime || '10:00',
-      completed: false,
-      isImportant: taskData.isImportant || false
-    };
+  // const createManualDailyTask = (taskData) => {
+  //   const newTask = {
+  //     id: Date.now().toString() + Math.random(),
+  // Create manual task directly in daily plan - Backend Integration
+  const createManualDailyTask = async (taskData) => {
+    try {
+      const manualTaskData = {
+        source: 'manual',
+        // taskId: null,
+        // habitId: null,
+        title: taskData.title,
+        startTime: taskData.startTime || '09:00',
+        endTime: taskData.endTime || '10:00',
+        // completed: false,
+        isImportant: taskData.isImportant || false
+      };
 
-    setDailyPlan(prev => ({
-      ...prev,
-      plannedTasks: [...prev.plannedTasks, newTask]
-    }));
+      // setDailyPlan(prev => ({
+      //   ...prev,
+      //   plannedTasks: [...prev.plannedTasks, newTask]
+      // }));
 
-    return newTask;
+      // return newTask;
+      const response = await dailyPlanAPI.add(manualTaskData);
+      if (response.success) {
+        const updatedPlan = {
+          ...response.dailyPlan,
+          plannedTasks: response.dailyPlan.plannedTasks.map(pt => ({
+            ...pt,
+            id: pt._id
+          }))
+        };
+        setDailyPlan(updatedPlan);
+        toast.success('Manual task added to daily plan');
+        return updatedPlan.plannedTasks[updatedPlan.plannedTasks.length - 1];
+      } else {
+        toast.error(response.message || 'Failed to create manual task');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error creating manual task:', error);
+      toast.error('Failed to create manual task');
+      return null;
+    }
   };
 
   // CRITICAL: Bidirectional sync for daily plan task completion
-  const toggleDailyPlanTaskCompletion = (id) => {
-    const item = dailyPlan.plannedTasks.find(t => t.id === id);
-    if (!item) return;
+  // const toggleDailyPlanTaskCompletion = (id) => {
+  //   const item = dailyPlan.plannedTasks.find(t => t.id === id);
+  //   if (!item) return;
 
-    // Update in daily plan
-    setDailyPlan(prev => ({
-      ...prev,
-      plannedTasks: prev.plannedTasks.map(t =>
-        t.id === id ? { ...t, completed: !t.completed } : t
-      )
-    }));
+  //   // Update in daily plan
+  //   setDailyPlan(prev => ({
+  //     ...prev,
+  //     plannedTasks: prev.plannedTasks.map(t =>
+  //       t.id === id ? { ...t, completed: !t.completed } : t
+  //     )
+  //   }));
 
-    // SYNC: Update source
-    if (item.source === 'task' && item.taskId) {
-      // Sync with main tasks
-      setTasks(tasks.map(task =>
-        task.id === item.taskId 
-          ? { ...task, completed: !task.completed }
-          : task
-      ));
-      // Legacy sync
-      setDailyTasks(dailyTasks.map(task =>
-        task.id === item.taskId 
-          ? { ...task, completed: !task.completed }
-          : task
-      ));
-    } else if (item.source === 'habit' && item.habitId) {
-      // Sync with habits
-      const habit = habits.find(h => h.id === item.habitId);
-      if (habit && !item.completed) {
-        // Mark as completed today
-        const today = new Date().toISOString().split('T')[0];
-        setHabits(habits.map(h =>
-          h.id === item.habitId
-            ? {
-                ...h,
-                lastCompleted: today,
-                streak: h.lastCompleted && 
-                  new Date(h.lastCompleted).toISOString().split('T')[0] === 
-                  new Date(Date.now() - 86400000).toISOString().split('T')[0]
-                  ? h.streak + 1
-                  : 1
-              }
-            : h
-        ));
+  // CRITICAL: Toggle Daily Plan Task - Backend handles ALL sync (tasks, habits, streaks)
+  const toggleDailyPlanTaskCompletion = async (id) => {
+    try {
+      const response = await dailyPlanAPI.toggle(id);
+      if (response.success) {
+        // Update dailyPlan from backend response
+        const updatedPlan = {
+          ...response.dailyPlan,
+          plannedTasks: response.dailyPlan.plannedTasks.map(pt => ({
+            ...pt,
+            id: pt._id
+          }))
+        };
+        setDailyPlan(updatedPlan);
+
+        // Find the toggled item to sync with source
+        const toggledItem = response.dailyPlan.plannedTasks.find(pt => pt._id === id);
+        if (!toggledItem) return;
+
+
+        // SYNC: Update source
+        // if (item.source === 'task' && item.taskId) {
+        //   // Sync with main tasks
+        //   setTasks(tasks.map(task =>
+        //     task.id === item.taskId
+        //       ? { ...task, completed: !task.completed }
+        //       : task
+        //   ));
+        //   // Legacy sync
+        //   setDailyTasks(dailyTasks.map(task =>
+        //     task.id === item.taskId
+        //       ? { ...task, completed: !task.completed }
+        //       : task
+        //   ));
+        // } else if (item.source === 'habit' && item.habitId) {
+        //   // Sync with habits
+        //   const habit = habits.find(h => h.id === item.habitId);
+        //   if (habit && !item.completed) {
+        //     // Mark as completed today
+        //     const today = new Date().toISOString().split('T')[0];
+        //     setHabits(habits.map(h =>
+        //       h.id === item.habitId
+        //         ? {
+        // GLOBAL SYNC: Update source arrays based on backend changes
+        if (toggledItem.source === 'task' && toggledItem.taskId) {
+          // Refetch tasks to get updated completion status
+          const tasksRes = await taskAPI.getAll();
+          if (tasksRes.success) {
+            const tasksData = tasksRes.tasks.map(t => ({
+              ...t,
+              id: t._id
+            }));
+            setTasks(tasksData);
+          }
+        } else if (toggledItem.source === 'habit' && toggledItem.habitId) {
+          // Refetch habits to get updated streak and lastCompleted
+          const habitsRes = await habitAPI.getAll();
+          if (habitsRes.success) {
+            const habitsData = habitsRes.habits.map(h => ({
+              ...h,
+              //       lastCompleted: today,
+              //       streak: h.lastCompleted &&
+              //         new Date(h.lastCompleted).toISOString().split('T')[0] ===
+              //         new Date(Date.now() - 86400000).toISOString().split('T')[0]
+              //         ? h.streak + 1
+              //         : 1
+              //     }
+              //     : h
+              // ));
+              id: h._id
+            }));
+            setHabits(habitsData);
+          }
+        }
+        // Manual tasks: only exist in dailyPlan (already updated above)
+
+      } else {
+        toast.error(response.message || 'Failed to toggle task');
       }
+    } catch (error) {
+      console.error('Error toggling daily plan task:', error);
+      toast.error('Failed to toggle task');
     }
-    // Manual tasks: only update in dailyPlan (already done above)
   };
 
   // Update daily plan task
-  const updateDailyPlanTask = (id, updates) => {
-    setDailyPlan(prev => ({
-      ...prev,
-      plannedTasks: prev.plannedTasks.map(item =>
-        item.id === id ? { ...item, ...updates } : item
-      )
-    }));
+  // const updateDailyPlanTask = (id, updates) => {
+  // Update daily plan task - Backend Integration
+  const updateDailyPlanTask = async (id, updates) => {
+    try {
+      // For now, update locally (backend doesn't have update endpoint for individual planned tasks)
+      // This is typically used for time adjustments, which are plan-specific
+      setDailyPlan(prev => ({
+        ...prev,
+        plannedTasks: prev.plannedTasks.map(item =>
+          item.id === id ? { ...item, ...updates } : item
+        )
+      }));
+    } catch (error) {
+      console.error('Error updating daily plan task:', error);
+      toast.error('Failed to update task');
+    }
   };
 
   // Clear daily plan
-  const clearDailyPlan = () => {
-    const today = new Date().toISOString().split('T')[0];
-    setDailyPlan({ date: today, plannedTasks: [] });
+  // const clearDailyPlan = () => {
+    // Clear daily plan - Backend Integration
+  const clearDailyPlan = async () => {
+    try {
+      const response = await dailyPlanAPI.clear();
+      if (response.success) {
+        const today = new Date().toISOString().split('T')[0];
+        setDailyPlan({ date: today, plannedTasks: [] });
+        toast.success('Daily plan cleared');
+      } else {
+        toast.error(response.message || 'Failed to clear daily plan');
+      }
+    } catch (error) {
+      console.error('Error clearing daily plan:', error);
+      toast.error('Failed to clear daily plan');
+    }
   };
 
   // ========== END DAILY PLAN FUNCTIONS ==========

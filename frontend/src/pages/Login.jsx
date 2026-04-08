@@ -1,13 +1,16 @@
-import { useEffect, useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+// import { useEffect, useState, useContext } from 'react';
+// import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import InputField from '../components/InputField';
 import GradientButton from '../components/GradientButton';
 import Card from '../components/Card';
 import { validateEmail } from '../utils/helpers';
 import { motion } from 'framer-motion';
-import axios from 'axios';
+// import axios from 'axios';
 import { useApp } from '../store/AppContext';
 import { toast } from 'react-toastify';
+import { authAPI } from '../api/apiService';
 
 
 const Login = () => {
@@ -35,12 +38,12 @@ const Login = () => {
     // Mock login - in real app would call API
     // localStorage.setItem('wisemind_user', JSON.stringify({ email: formData.email }));
 
-    try {
+    // try {
 
-      const response = await axios.post(backendURL + '/api/user/login', formData)
-      if (response.data.success) {
-        setToken(response.data.token)
-        localStorage.setItem('token', response.data.token)
+    //   const response = await axios.post(backendURL + '/api/user/login', formData)
+    //   if (response.data.success) {
+    //     setToken(response.data.token)
+    //     localStorage.setItem('token', response.data.token)
         // const hasOnboarded = localStorage.getItem('wisemind_hasOnboarded');
         // if (hasOnboarded === 'true') {
         //   navigate('/dashboard');
@@ -49,22 +52,40 @@ const Login = () => {
         // }
 
         // SAVE USER DATA
-        const userData = response.data.user || { 
-          name: response.data.name || 'User', 
+        // const userData = response.data.user || { 
+        //   name: response.data.name || 'User', 
+
+
+
+    try {
+      const response = await authAPI.login(formData);
+      
+      if (response.success) {
+        // Store token
+        setToken(response.token);
+        localStorage.setItem('token', response.token);
+
+        // Save user data
+        const userData = response.user || { 
+          name: response.name || 'User', 
           email: formData.email 
         };
         setUser(userData);
         localStorage.setItem('wisemind_user', JSON.stringify(userData));
 
+        toast.success('Login successful!');
         navigate('/dashboard');
       } else {
+        setError(response.message || 'Login failed');
+        toast.error(response.message || 'Login failed');
         toast.error(response.data.message)
       }
 
     } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-    }
+
+    //   console.log(error);
+    //   toast.error(error.message);
+    // }
     // Check if user has completed onboarding
     // const hasOnboarded = localStorage.getItem('wisemind_hasOnboarded');
     // if (hasOnboarded === 'true') {
@@ -72,6 +93,11 @@ const Login = () => {
     // } else {
     //   navigate('/onboarding');
     // }
+    
+    console.error('Login error:', error);
+      setError('An error occurred. Please try again.');
+      toast.error('Login failed. Please try again.');
+    }
   };
 
   useEffect(() => {

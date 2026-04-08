@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+// import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import InputField from '../components/InputField';
 import GradientButton from '../components/GradientButton';
 import Card from '../components/Card';
 import { validateEmail } from '../utils/helpers';
 import { motion } from 'framer-motion'
 import { useApp } from '../store/AppContext';
-import axios from 'axios';
+// import axios from 'axios';
 import { toast } from 'react-toastify';
+import { authAPI } from '../api/apiService';
 
 
 const Signup = () => {
@@ -41,32 +43,54 @@ const Signup = () => {
 
     try {
 
-      const response = await axios.post(backendURL + '/api/user/register', formData)
-      if(response.data.success){
-        console.log(response.data);
-        setToken(response.data.token)
-        localStorage.setItem('token', response.data.token)
-        // SAVE USER DATA
-        const userData = response.data.user || { 
+
+      // const response = await axios.post(backendURL + '/api/user/register', formData)
+      // if(response.data.success){
+      //   console.log(response.data);
+      //   setToken(response.data.token)
+      //   localStorage.setItem('token', response.data.token)
+      //   // SAVE USER DATA
+      //   const userData = response.data.user || { 
+
+      const response = await authAPI.register(formData);
+      
+      if(response.success){
+        // Store token
+        setToken(response.token);
+        localStorage.setItem('token', response.token);
+        
+        // Save user data
+        const userData = response.user || { 
           name: formData.name, 
           email: formData.email 
         };
         setUser(userData);
         localStorage.setItem('wisemind_user', JSON.stringify(userData));
+        toast.success('Account created successfully!');
         navigate('/onboarding')
       } else{
-        toast.error(response.data.message)
+          toast.error(response.data.message)
+          setError(response.message || 'Signup failed');
+          toast.error(response.message || 'Signup failed');
       }
       
     } catch (error) {
-      console.log(error);
-    }
+
+      
+    //   console.log(error);
+    // }
 
     // localStorage.setItem('wisemind_user', JSON.stringify({
     //   name: formData.name,
     //   email: formData.email,
     //   password: formData.password,
     // }));
+
+
+      console.error('Signup error:', error);
+      setError('An error occurred. Please try again.');
+      toast.error('Signup failed. Please try again.');
+    }
   };
 
 
