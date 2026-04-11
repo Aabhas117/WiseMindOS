@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Target, CheckCircle, Zap, ArrowRight } from 'lucide-react';
+import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import Card from '../components/Card';
 import StatCard from '../components/StatCard';
@@ -13,6 +13,8 @@ import HabitCard from '../components/HabitCard';
 import GradientButton from '../components/GradientButton';
 import { motion } from 'framer-motion'
 import { useMemo } from 'react';
+import profile_pic from '../assets/profile_pic.svg'
+
 
 const Dashboard = () => {
   // const user = JSON.parse(localStorage.getItem('wisemind_user') || '{}');
@@ -91,10 +93,53 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Card className="mb-6 relative overflow-hidden bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(99,102,241,0.2)]">
+          <Card className="mb-6 w-full  relative overflow-hidden bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(99,102,241,0.2)]">
 
-            {/* Animated Glow */}
-            <motion.div
+            <div className="rounded mb-4 p-4 flex flex-col items-center">
+
+              <div className='flex gap-5 flex-col w-full justify-start'>
+                <div className='h-20 w-20 bg-black rounded-full relative group border-2 border-white flex-shrink-0'>
+                  <img src={user.profile_pic || profile_pic} className='w-full h-full object-cover rounded-full' alt="" />
+                  <div className='w-full h-full bg-black/50 absolute rounded-full inset-0 cursor-pointer opacity-0 z-10 group-hover:opacity-100'>
+                    <div className='h-full w-full flex items-center justify-center'>
+
+                      <Camera size={18} className='text-white' /></div>
+                  </div>
+                  <div className='border-8 rounded-full z-10 bottom-1 absolute right-1 border-green-600'></div>
+                </div>
+
+                <div className='flex flex-col text-white'>
+                  <span className='text-3xl md:text-4xl'>{user.name || 'User'}</span>
+                  <span className='cursor-pointer text-sm text-gray-300'>@user.name</span>
+                </div>
+              </div>
+
+            </div>
+            <div className='text-gray-400 mb-4'>Heyaa My aim is Software Developer . come lets build momentum today. Give me your hand.</div>
+
+            <div className='flex justify-around mb-4'>
+              <div className="text-center">
+                <p className="text-lg font-bold text-indigo-400">{productivityScore}%</p>
+                <p className="text-xs text-gray-400">Productivity</p>
+              </div>
+
+              <div className="text-center">
+                <p className="text-lg font-bold text-green-400">{disciplineScore}%</p>
+                <p className="text-xs text-gray-400">Discipline</p>
+              </div>
+            </div>
+
+            <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]">
+              <UserPlus2 size={20} />
+              <span>Connect</span>
+            </GradientButton>
+
+          </Card>
+
+          {/* <GradientButton> */}
+
+          {/* Animated Glow */}
+          {/* <motion.div
               className="absolute -top-10 -left-10 w-40 h-40 bg-indigo-500 rounded-full blur-3xl opacity-20"
               animate={{ x: [0, 30, 0], y: [0, 20, 0] }}
               transition={{ duration: 8, repeat: Infinity }}
@@ -104,24 +149,24 @@ const Dashboard = () => {
               className="absolute bottom-0 right-0 w-40 h-40 bg-purple-500 rounded-full blur-3xl opacity-20"
               animate={{ x: [0, -30, 0], y: [0, -20, 0] }}
               transition={{ duration: 10, repeat: Infinity }}
-            />
+            /> */}
 
-            {/* Content */}
-            <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          {/* Content */}
+          {/* <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"> */}
 
-              {/* Left */}
-              <div>
+          {/* Left */}
+          {/* <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
-                  Welcome back, {user.name || 'User'} 👋
+                  Welcome, {user.name || 'User'} 👋
                 </h1>
 
                 <p className="text-gray-400 text-sm md:text-base">
-                  Let’s build momentum today 🚀
+                  Let’s build momentum today!!
                 </p>
-              </div>
+              </div> */}
 
-              {/* Right Stats */}
-              <div className="flex gap-4">
+          {/* Right Stats */}
+          {/* <div className="flex gap-4">
 
                 <div className="text-center">
                   <p className="text-lg font-bold text-indigo-400">{productivityScore}%</p>
@@ -133,10 +178,10 @@ const Dashboard = () => {
                   <p className="text-xs text-gray-400">Discipline</p>
                 </div>
 
-              </div>
+              </div> */}
 
-            </div>
-          </Card>
+          {/* </div> */}
+
         </motion.div>
 
         {/* Clock Widget & Focus Room */}
@@ -222,8 +267,8 @@ const Dashboard = () => {
                     onToggle={toggleTaskCompletion}
                   /> */}
               {pendingPlannedTasks.slice(0, 5).map((item, index) => (
-                <motion.div 
-                  key={item.id} 
+                <motion.div
+                  key={item.id}
                   whileHover={{ scale: 1.02 }}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -246,13 +291,12 @@ const Dashboard = () => {
                             {item.title}
                           </h4>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-xs px-2 py-0.5 rounded-full border ${
-                              item.source === 'task' 
-                                ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-                                : item.source === 'habit'
+                            <span className={`text-xs px-2 py-0.5 rounded-full border ${item.source === 'task'
+                              ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                              : item.source === 'habit'
                                 ? 'bg-green-500/20 text-green-400 border-green-500/30'
                                 : 'bg-purple-500/20 text-purple-400 border-purple-500/30'
-                            }`}>
+                              }`}>
                               {item.source === 'task' ? 'Task' : item.source === 'habit' ? 'Habit' : 'Manual'}
                             </span>
                             {item.isImportant && (
@@ -266,11 +310,10 @@ const Dashboard = () => {
                         {/* Completion Toggle */}
                         <button
                           onClick={() => toggleDailyPlanTaskCompletion(item.id)}
-                          className={`p-2 rounded-lg transition-all ${
-                            item.completed
-                              ? 'bg-green-500/20 text-green-400'
-                              : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
-                          }`}
+                          className={`p-2 rounded-lg transition-all ${item.completed
+                            ? 'bg-green-500/20 text-green-400'
+                            : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
+                            }`}
                           data-testid={`toggle-planned-task-${item.id}`}
                         >
                           <CheckCircle size={20} />
@@ -447,9 +490,9 @@ const Dashboard = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  onClick={()=>navigate('/trackers/habits')}
+                  onClick={() => navigate('/trackers/habits')}
                 >
-                  <HabitCard key={habit.id} habit={habit}/>
+                  <HabitCard key={habit.id} habit={habit} />
                 </motion.div>
               ))}
             </div>
