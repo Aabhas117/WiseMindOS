@@ -14,6 +14,7 @@ import GradientButton from '../components/GradientButton';
 import { motion } from 'framer-motion'
 import { useMemo } from 'react';
 import profile_pic from '../assets/profile_pic.svg'
+import { showToast } from '../utils/toastHelper';
 
 
 const Dashboard = () => {
@@ -72,6 +73,10 @@ const Dashboard = () => {
   const topProjects = projects.slice(0, 4);
   const topHabits = habits.slice(0, 3);
 
+  // const handleConnect = ()=>{
+  //   showToast({ message: "Not Functional"})
+  // }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black pb-20 px-4 pt-6 relative overflow-hidden">
       <motion.div
@@ -106,7 +111,7 @@ const Dashboard = () => {
                 <div className='border-6 h-5 w-5 rounded-full z-10 bottom-1 absolute right-1 border-green-400'></div>
               </div>
               <div className='flex flex-col items-center'>
-                <span className='text-3xl md:text-4xl text-gray-300'>{user.name || 'User'}</span>
+                <span className='text-3xl md:text-4xl default-bold text-gray-100'>{user.name || 'User'}</span>
                 <span className='cursor-pointer text-sm text-gray-300'>@{user.username || 'username'}</span>
               </div>
             </div>

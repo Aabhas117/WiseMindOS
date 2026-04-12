@@ -20,7 +20,7 @@ const createGoal = async (req, res) => {
         });
 
         await newGoal.save();
-        res.json({ success: true, goal: newGoal });
+        res.json({ success: true, goal: newGoal, message: 'Goal Created Successfully !' });
 
     } catch (error) {
         console.log(error);
@@ -75,7 +75,7 @@ const updateGoal = async (req, res) => {
         if (deadline !== undefined) goal.deadline = deadline;
 
         await goal.save();
-        res.json({ success: true, goal });
+        res.json({ success: true, goal, message: 'Goal updated Successfully' });
 
     } catch (error) {
         console.log(error);

@@ -23,7 +23,7 @@ const createTask = async (req, res) => {
         });
 
         await newTask.save();
-        res.json({ success: true, task: newTask });
+        res.json({ success: true, task: newTask, message: 'Task Created Successfully !' });
 
     } catch (error) {
         console.log(error);
@@ -67,7 +67,7 @@ const updateTask = async (req, res) => {
         if (completed !== undefined) task.completed = completed;
 
         await task.save();
-        res.json({ success: true, task });
+        res.json({ success: true, task, message: 'Task Updated !' });
 
     } catch (error) {
         console.log(error);

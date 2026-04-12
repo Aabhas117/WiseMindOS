@@ -114,7 +114,7 @@ const addToDailyPlan = async (req, res) => {
         dailyPlan.plannedTasks.push(newPlannedTask);
         await dailyPlan.save();
 
-        res.json({ success: true, dailyPlan });
+        res.json({ success: true, dailyPlan, message: 'Task added for today' });
 
     } catch (error) {
         console.log(error);
@@ -143,7 +143,7 @@ const removeFromDailyPlan = async (req, res) => {
         );
 
         await dailyPlan.save();
-        res.json({ success: true, dailyPlan });
+        res.json({ success: true, dailyPlan, message: 'Task removed successfully !' });
 
     } catch (error) {
         console.log(error);

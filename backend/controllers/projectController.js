@@ -20,7 +20,7 @@ const createProject = async (req, res) => {
         });
 
         await newProject.save();
-        res.json({ success: true, project: newProject });
+        res.json({ success: true, project: newProject, message: 'Project Created Successfully' });
 
     } catch (error) {
         console.log(error);
@@ -77,7 +77,7 @@ const updateProject = async (req, res) => {
         if (description !== undefined) project.description = description;
 
         await project.save();
-        res.json({ success: true, project });
+        res.json({ success: true, project, message: 'Project Updated Successfully' });
 
     } catch (error) {
         console.log(error);

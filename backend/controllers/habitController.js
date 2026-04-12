@@ -37,7 +37,7 @@ const createHabit = async (req, res) => {
         });
 
         await newHabit.save();
-        res.json({ success: true, habit: newHabit });
+        res.json({ success: true, habit: newHabit, message: 'Habit created Successfully !' });
 
     } catch (error) {
         console.log(error);
@@ -80,7 +80,7 @@ const updateHabit = async (req, res) => {
         if (mode) habit.mode = mode;
 
         await habit.save();
-        res.json({ success: true, habit });
+        res.json({ success: true, habit, message: 'Habit Updated Successfully' });
 
     } catch (error) {
         console.log(error);

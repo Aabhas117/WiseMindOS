@@ -1,16 +1,12 @@
-// import { useEffect, useState, useContext } from 'react';
-// import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import InputField from '../components/InputField';
 import GradientButton from '../components/GradientButton';
 import Card from '../components/Card';
-import { validateEmail } from '../utils/helpers';
 import { motion } from 'framer-motion';
-// import axios from 'axios';
 import { useApp } from '../store/AppContext';
-import { toast } from 'react-toastify';
 import { authAPI } from '../api/apiService';
+import { showToast } from '../utils/toastHelper';
 
 
 const Login = () => {
@@ -34,34 +30,33 @@ const Login = () => {
 
     try {
       const response = await authAPI.login(formData);
-      
+
       if (response.success) {
         // Store token
         setToken(response.token);
         localStorage.setItem('token', response.token);
 
         // Save user data
-        const userData = response.user || { 
-          name: response.name || 'User', 
+        const userData = response.user || {
+          name: response.name || 'User',
           username: response.username,
           email: response.email,
         };
         setUser(userData);
         localStorage.setItem('wisemind_user', JSON.stringify(userData));
 
-        toast.success('Login successful!');
+        showToast({ message: response.message || 'Login Successful', status: "success" })
         navigate('/dashboard');
       } else {
         setError(response.message || 'Login failed');
-        toast.error(response.message || 'Login failed');
-        toast.error(response.data.message)
+        showToast({ message: response.message || 'Login failed', status: 'error'})
       }
 
     } catch (error) {
-    
+
       console.error('Login error:', error);
       setError('An error occurred. Please try again.');
-      toast.error('Login failed. Please try again.');
+      showToast({ message: error.message || 'Error Occured', status: "error" })
     }
   };
 

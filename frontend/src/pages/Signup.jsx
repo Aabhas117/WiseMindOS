@@ -1,5 +1,4 @@
 import { useState } from 'react';
-// import { Link, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import InputField from '../components/InputField';
 import GradientButton from '../components/GradientButton';
@@ -7,8 +6,8 @@ import Card from '../components/Card';
 import { validateEmail } from '../utils/helpers';
 import { motion } from 'framer-motion'
 import { useApp } from '../store/AppContext';
-import { toast } from 'react-toastify';
 import { authAPI } from '../api/apiService';
+import { showToast } from '../utils/toastHelper';
 
 
 const Signup = () => {
@@ -57,18 +56,17 @@ const Signup = () => {
         };
         setUser(userData);
         localStorage.setItem('wisemind_user', JSON.stringify(userData));
-        toast.success('Account created successfully!');
+        showToast({ message: response.message || 'Account created successfully!', status: 'success' })
         navigate('/onboarding')
       } else{
-          toast.error(response.data.message)
           setError(response.message || 'Signup failed');
-          toast.error(response.message || 'Signup failed');
+          showToast({ message: response.message || 'Signup failed', status: 'error' })
       }
       
     } catch (error) {
         console.error('Signup error:', error);
         setError('An error occurred. Please try again.');
-        toast.error('Signup failed. Please try again.');
+        showToast({ message: error.message || 'Error Occured. Please try again.', status: 'error' })
     }
   };
 

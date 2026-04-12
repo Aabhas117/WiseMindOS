@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { goalAPI, projectAPI, taskAPI, habitAPI, dailyPlanAPI } from '../api/apiService';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
+import { showToast } from '../utils/toastHelper';
 
 const AppContext = createContext();
 
@@ -196,7 +197,7 @@ export const AppProvider = ({ children }) => {
       console.error('Failed to load data from backend:', error);
       setLoading(false);
       // Keep localStorage data as fallback
-      toast.info('Using offline data');
+      showToast({ message: 'Using offline data' })
     }
   };
 
@@ -218,15 +219,15 @@ export const AppProvider = ({ children }) => {
           id: response.goal._id
         };
         setGoals([...goals, newGoal]);
-        toast.success('Goal created successfully');
+        showToast({ message: response.message || 'Goal created successfully', status: 'success' })
         return newGoal;
       } else {
-        toast.error(response.message || 'Failed to create goal');
+        showToast({ message: response.message || 'Failed to create goal', status: 'error' })
         return null;
       }
     } catch (error) {
       console.error('Error creating goal:', error);
-      toast.error('Failed to create goal');
+      showToast({ message: error.message || 'Failed to create goal. Error!', status: 'error' })
       return null;
     }
   };
@@ -250,15 +251,15 @@ export const AppProvider = ({ children }) => {
           id: response.project._id
         };
         setProjects([...projects, newProject]);
-        toast.success('Project created successfully');
+        showToast({ message: response.message || 'Project created successfully', status: 'success' })
         return newProject;
       } else {
-        toast.error(response.message || 'Failed to create project');
+        showToast({ message: response.message || 'Failed to create project', status: 'error' })
         return null;
       }
     } catch (error) {
       console.error('Error creating project:', error);
-      toast.error('Failed to create project');
+      showToast({ message: error.message || 'Failed to create project', status: 'error' })
       return null;
     }
   };
@@ -285,15 +286,15 @@ export const AppProvider = ({ children }) => {
           id: response.task._id
         };
         setTasks([...tasks, newTask]);
-        toast.success('Task created successfully');
+        showToast({ message: response.message || 'Task created successfully', status: 'success' })
         return newTask;
       } else {
-        toast.error(response.message || 'Failed to create task');
+        showToast({ message: response.message || 'Failed to create task', status: 'error' })
         return null;
       }
     } catch (error) {
       console.error('Error creating task:', error);
-      toast.error('Failed to create task');
+      showToast({ message: error.message || 'Failed to create task', status: 'error' })
       return null;
     }
   };
@@ -320,15 +321,15 @@ export const AppProvider = ({ children }) => {
           id: response.habit._id
         };
         setHabits([...habits, newHabit]);
-        toast.success('Habit created successfully');
+        showToast({ message: response.message || 'Habit created successfully', status: 'success' })
         return newHabit;
       } else {
-        toast.error(response.message || 'Failed to create habit');
+        showToast({ message: response.message || 'Failed to create habit', status: 'error' })
         return null;
       }
     } catch (error) {
       console.error('Error creating habit:', error);
-      toast.error('Failed to create habit');
+      showToast({ message: error.message || 'Failed to create habit', status: 'error' })
       return null;
     }
   };
@@ -390,6 +391,8 @@ export const AppProvider = ({ children }) => {
           //       : item
           //   )
           // }));
+        } else{
+          showToast({ message: response.message || 'Failed to update task', status: 'error' })
         }
       }
 
@@ -399,7 +402,7 @@ export const AppProvider = ({ children }) => {
       ));
     } catch (error) {
       console.error('Error toggling task:', error);
-      toast.error('Failed to update task');
+      showToast({ message: error.message || 'Failed to update task', status: 'error' })
     }
   };
 
@@ -417,13 +420,13 @@ export const AppProvider = ({ children }) => {
           // task.id === taskId ? { ...task, ...updates } : task
           task.id === taskId ? updatedTask : task
         ));
-        toast.success('Task updated successfully');
+        showToast({ message: response.message || 'Task updated successfully', status: 'success' })
       } else {
-        toast.error(response.message || 'Failed to update task');
+        showToast({ message: response.message || 'Failed to update task', status: 'error' })
       }
     } catch (error) {
       console.error('Error updating task:', error);
-      toast.error('Failed to update task');
+      showToast({ message: error.message || 'Failed to update task', status: 'error' })
     }
   };
 
@@ -435,13 +438,13 @@ export const AppProvider = ({ children }) => {
       if (response.success) {
         setTasks(tasks.filter(task => task.id !== taskId));
         setDailyTasks(dailyTasks.filter(task => task.id !== taskId));
-        toast.success('Task deleted successfully');
+        showToast({ message: response.message || 'Task deleted successfully', status: 'success' })
       } else {
-        toast.error(response.message || 'Failed to delete task');
+        showToast({ message: response.message || 'Failed to delete task', status: 'error' })
       }
     } catch (error) {
       console.error('Error deleting task:', error);
-      toast.error('Failed to delete task');
+      showToast({ message: error.message || 'Failed to delete task', status: 'error' })
     }
   };
 
@@ -459,13 +462,13 @@ export const AppProvider = ({ children }) => {
           // goal.id === goalId ? { ...goal, ...updates } : goal
           goal.id === goalId ? updatedGoal : goal
         ));
-        toast.success('Goal updated successfully');
+        showToast({ message: response.message || 'Goal updated successfully', status: 'success' })
       } else {
-        toast.error(response.message || 'Failed to update goal');
+        showToast({ message: response.message || 'Failed to update goal', status: 'error' })
       }
     } catch (error) {
       console.error('Error updating goal:', error);
-      toast.error('Failed to update goal');
+      showToast({ message: error.message || 'Failed to update goal', status: 'error' })
     }
   };
 
@@ -476,13 +479,13 @@ export const AppProvider = ({ children }) => {
       const response = await goalAPI.delete(goalId);
       if (response.success) {
         setGoals(goals.filter(goal => goal.id !== goalId));
-        toast.success('Goal deleted successfully');
+        showToast({ message: response.message || 'Goal deleted successfully', status: 'success' })
       } else {
-        toast.error(response.message || 'Failed to delete goal');
+        showToast({ message: response.message || 'Failed to delete goal', status: 'error' })
       }
     } catch (error) {
       console.error('Error deleting goal:', error);
-      toast.error('Failed to delete goal');
+      showToast({ message: error.message || 'Failed to delete goal', status: 'error' })
     }
   };
 
@@ -500,13 +503,13 @@ export const AppProvider = ({ children }) => {
           // project.id === projectId ? { ...project, ...updates } : project
           project.id === projectId ? updatedProject : project
         ));
-        toast.success('Project updated successfully');
+        showToast({ message: response.message || 'Project Updated successfully', status: 'success' })
       } else {
-        toast.error(response.message || 'Failed to update project');
+        showToast({ message: response.message || 'Failed to update project', status: 'error' })
       }
     } catch (error) {
       console.error('Error updating project:', error);
-      toast.error('Failed to update project');
+      showToast({ message: error.message || 'Failed to update project', status: 'error' })
     }
   };
 
@@ -517,13 +520,13 @@ export const AppProvider = ({ children }) => {
       const response = await projectAPI.delete(projectId);
       if (response.success) {
         setProjects(projects.filter(project => project.id !== projectId));
-        toast.success('Project deleted successfully');
+        showToast({ message: response.message || 'Project deleted successfully', status: 'success' })
       } else {
-        toast.error(response.message || 'Failed to delete project');
+        showToast({ message: response.message || 'Failed to delete project', status: 'error' })
       }
     } catch (error) {
       console.error('Error deleting project:', error);
-      toast.error('Failed to delete project');
+      showToast({ message: error.message || 'Failed to delete project', status: 'error' })
     }
   };
 
@@ -541,13 +544,13 @@ export const AppProvider = ({ children }) => {
           // habit.id === habitId ? { ...habit, ...updates } : habit
           habit.id === habitId ? updatedHabit : habit
         ));
-        toast.success('Habit updated successfully');
+        showToast({ message: response.message || 'Habit updated successfully', status: 'success' })
       } else {
-        toast.error(response.message || 'Failed to update habit');
+        showToast({ message: response.message || 'Failed to update habit', status: 'error' })
       }
     } catch (error) {
       console.error('Error updating habit:', error);
-      toast.error('Failed to update habit');
+      showToast({ message: error.message || 'Failed to update habit', status: 'error' })
     }
   };
 
@@ -558,13 +561,13 @@ export const AppProvider = ({ children }) => {
       const response = await habitAPI.delete(habitId);
       if (response.success) {
         setHabits(habits.filter(habit => habit.id !== habitId));
-        toast.success('Habit deleted successfully');
+        showToast({ message: response.message || 'Habit deleted successfully', status: 'success' })
       } else {
-        toast.error(response.message || 'Failed to delete habit');
+        showToast({ message: response.message || 'Failed to delete habit', status: 'error' })
       }
     } catch (error) {
       console.error('Error deleting habit:', error);
-      toast.error('Failed to delete habit');
+      showToast({ message: error.message || 'Failed to delete habit', status: 'error' })
     }
   };
 
@@ -670,15 +673,15 @@ export const AppProvider = ({ children }) => {
           }))
         };
         setDailyPlan(updatedPlan);
-        toast.success('Added to daily plan');
+        showToast({ message: response.message || 'Added to daily plan', status: 'success' })
         return updatedPlan.plannedTasks[updatedPlan.plannedTasks.length - 1];
       } else {
-        toast.error(response.message || 'Failed to add to daily plan');
+        showToast({ message: response.message || 'Failed to add to daily plan', status: 'error' })
         return null;
       }
     } catch (error) {
       console.error('Error adding to daily plan:', error);
-      toast.error('Failed to add to daily plan');
+      showToast({ message: error.message || 'Failed to add to daily plan', status: 'error' })
       return null;
     }
   };
@@ -702,13 +705,12 @@ export const AppProvider = ({ children }) => {
           }))
         };
         setDailyPlan(updatedPlan);
-        toast.success('Removed from daily plan');
+        showToast({ message: response.message || 'Removed from daily plan', status: 'success' })
       } else {
-        toast.error(response.message || 'Failed to remove from daily plan');
+        showToast({ message: response.message || 'Failed to remove from daily plan', status: 'error' })
       }
     } catch (error) {
-      console.error('Error removing from daily plan:', error);
-      toast.error('Failed to remove from daily plan');
+      showToast({ message: error.message || 'Failed to remove from daily plan', status: 'error' })
     }
   };
 
@@ -746,15 +748,15 @@ export const AppProvider = ({ children }) => {
           }))
         };
         setDailyPlan(updatedPlan);
-        toast.success('Manual task added to daily plan');
+        showToast({ message: response.message || 'Manual task added to daily plan', status: 'success' })
         return updatedPlan.plannedTasks[updatedPlan.plannedTasks.length - 1];
       } else {
-        toast.error(response.message || 'Failed to create manual task');
+        showToast({ message: response.message || 'Failed to create manual task', status: 'error' })
         return null;
       }
     } catch (error) {
       console.error('Error creating manual task:', error);
-      toast.error('Failed to create manual task');
+      showToast({ message: error.message || 'Failed to create manual task', status: 'error' })
       return null;
     }
   };
@@ -849,11 +851,11 @@ export const AppProvider = ({ children }) => {
         // Manual tasks: only exist in dailyPlan (already updated above)
 
       } else {
-        toast.error(response.message || 'Failed to toggle task');
+        showToast({ message: response.message || 'Failed to toggle task', status: 'error' })
       }
     } catch (error) {
       console.error('Error toggling daily plan task:', error);
-      toast.error('Failed to toggle task');
+      showToast({ message: error.message || 'Failed to toggle task', status: 'error' })
     }
   };
 
@@ -872,7 +874,7 @@ export const AppProvider = ({ children }) => {
       }));
     } catch (error) {
       console.error('Error updating daily plan task:', error);
-      toast.error('Failed to update task');
+      showToast({ message: error.message || 'Failed to update task', status: 'error' })
     }
   };
 
@@ -885,13 +887,13 @@ export const AppProvider = ({ children }) => {
       if (response.success) {
         const today = new Date().toISOString().split('T')[0];
         setDailyPlan({ date: today, plannedTasks: [] });
-        toast.success('Daily plan cleared');
+        showToast({ message: response.message || 'Daily plan cleared', status: 'success' })
       } else {
-        toast.error(response.message || 'Failed to clear daily plan');
+        showToast({ message: response.message || 'Failed to clear daily plan', status: 'error' })
       }
     } catch (error) {
       console.error('Error clearing daily plan:', error);
-      toast.error('Failed to clear daily plan');
+      showToast({ message: error.message || 'Failed to clear daily plan', status: 'error' })
     }
   };
 
