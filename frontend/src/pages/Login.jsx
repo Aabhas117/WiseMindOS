@@ -14,9 +14,9 @@ import { authAPI } from '../api/apiService';
 
 
 const Login = () => {
-  const { token, setToken, user, setUser, navigate, backendURL } = useApp()
+  const { token, setToken, setUser, navigate } = useApp()
   const [formData, setFormData] = useState({
-    email: '',
+    identifier: '',
     password: ''
   });
   const [error, setError] = useState('');
@@ -25,35 +25,10 @@ const Login = () => {
     e.preventDefault();
     setError('');
 
-    if (!formData.email || !formData.password) {
+    if (!formData.identifier || !formData.password) {
       setError('Please fill in all fields');
       return;
     }
-
-    if (!validateEmail(formData.email)) {
-      setError('Please enter a valid email');
-      return;
-    }
-
-    // Mock login - in real app would call API
-    // localStorage.setItem('wisemind_user', JSON.stringify({ email: formData.email }));
-
-    // try {
-
-    //   const response = await axios.post(backendURL + '/api/user/login', formData)
-    //   if (response.data.success) {
-    //     setToken(response.data.token)
-    //     localStorage.setItem('token', response.data.token)
-        // const hasOnboarded = localStorage.getItem('wisemind_hasOnboarded');
-        // if (hasOnboarded === 'true') {
-        //   navigate('/dashboard');
-        // } else {
-        //   navigate('/onboarding');
-        // }
-
-        // SAVE USER DATA
-        // const userData = response.data.user || { 
-        //   name: response.data.name || 'User', 
 
 
 
@@ -68,7 +43,8 @@ const Login = () => {
         // Save user data
         const userData = response.user || { 
           name: response.name || 'User', 
-          email: formData.email 
+          username: response.username,
+          email: response.email,
         };
         setUser(userData);
         localStorage.setItem('wisemind_user', JSON.stringify(userData));
@@ -82,19 +58,8 @@ const Login = () => {
       }
 
     } catch (error) {
-
-    //   console.log(error);
-    //   toast.error(error.message);
-    // }
-    // Check if user has completed onboarding
-    // const hasOnboarded = localStorage.getItem('wisemind_hasOnboarded');
-    // if (hasOnboarded === 'true') {
-    //   navigate('/dashboard');
-    // } else {
-    //   navigate('/onboarding');
-    // }
     
-    console.error('Login error:', error);
+      console.error('Login error:', error);
       setError('An error occurred. Please try again.');
       toast.error('Login failed. Please try again.');
     }
@@ -158,11 +123,11 @@ shadow-[0_0_40px_rgba(99,102,241,0.2)]
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <InputField
-              label="Email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="Enter your email"
+              label="Email / Username"
+              type="text"
+              value={formData.identifier}
+              onChange={(e) => setFormData({ ...formData, identifier: e.target.value })}
+              placeholder="Email or Username"
               required
             />
 

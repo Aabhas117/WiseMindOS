@@ -7,16 +7,15 @@ import Card from '../components/Card';
 import { validateEmail } from '../utils/helpers';
 import { motion } from 'framer-motion'
 import { useApp } from '../store/AppContext';
-// import axios from 'axios';
 import { toast } from 'react-toastify';
 import { authAPI } from '../api/apiService';
 
 
 const Signup = () => {
-  const { token, setToken, setUser, navigate, backendURL } = useApp();
-  const [showPassword, setShowPassword] = useState(false);
+  const { token, setToken, setUser, navigate } = useApp();
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     email: '',
     password: '',
   });
@@ -26,7 +25,7 @@ const Signup = () => {
     e.preventDefault();
     setError('');
 
-    if (!formData.name || !formData.email || !formData.password) {
+    if (!formData.name || !formData.email || !formData.password || !formData.username) {
       setError('Please fill in all fields');
       return;
     }
@@ -43,15 +42,6 @@ const Signup = () => {
 
     try {
 
-
-      // const response = await axios.post(backendURL + '/api/user/register', formData)
-      // if(response.data.success){
-      //   console.log(response.data);
-      //   setToken(response.data.token)
-      //   localStorage.setItem('token', response.data.token)
-      //   // SAVE USER DATA
-      //   const userData = response.data.user || { 
-
       const response = await authAPI.register(formData);
       
       if(response.success){
@@ -61,8 +51,9 @@ const Signup = () => {
         
         // Save user data
         const userData = response.user || { 
-          name: formData.name, 
-          email: formData.email 
+          name: formData.name,
+          username: formData.username, 
+          email: formData.email,
         };
         setUser(userData);
         localStorage.setItem('wisemind_user', JSON.stringify(userData));
@@ -75,21 +66,9 @@ const Signup = () => {
       }
       
     } catch (error) {
-
-      
-    //   console.log(error);
-    // }
-
-    // localStorage.setItem('wisemind_user', JSON.stringify({
-    //   name: formData.name,
-    //   email: formData.email,
-    //   password: formData.password,
-    // }));
-
-
-      console.error('Signup error:', error);
-      setError('An error occurred. Please try again.');
-      toast.error('Signup failed. Please try again.');
+        console.error('Signup error:', error);
+        setError('An error occurred. Please try again.');
+        toast.error('Signup failed. Please try again.');
     }
   };
 
@@ -154,6 +133,15 @@ shadow-[0_0_40px_rgba(99,102,241,0.2)]'>
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Enter your name"
+                required
+              />
+
+              <InputField
+                label="Username"
+                type="text"
+                value={formData.username}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                placeholder="Choose Username"
                 required
               />
 

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera } from 'lucide-react';
+import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarCheck, CalendarDays } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import Card from '../components/Card';
 import StatCard from '../components/StatCard';
@@ -17,7 +17,6 @@ import profile_pic from '../assets/profile_pic.svg'
 
 
 const Dashboard = () => {
-  // const user = JSON.parse(localStorage.getItem('wisemind_user') || '{}');
   const {
     goals,
     user,
@@ -93,29 +92,26 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Card className="mb-6 w-full  relative overflow-hidden bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(99,102,241,0.2)]">
+          <Card className="mb-6 w-full  relative overflow-hidden bg-white/15 backdrop-blur-xl border-20 border-black/20 shadow-[0_0_40px_rgba(99,102,241,0.2)]">
 
-            <div className="rounded mb-4 p-4 flex flex-col items-center">
-
-              <div className='flex gap-5 flex-col w-full justify-start'>
-                <div className='h-20 w-20 bg-black rounded-full relative group border-2 border-white flex-shrink-0'>
-                  <img src={user.profile_pic || profile_pic} className='w-full h-full object-cover rounded-full' alt="" />
-                  <div className='w-full h-full bg-black/50 absolute rounded-full inset-0 cursor-pointer opacity-0 z-10 group-hover:opacity-100'>
-                    <div className='h-full w-full flex items-center justify-center'>
-
-                      <Camera size={18} className='text-white' /></div>
+            <div className="rounded w-full mb-6 p-4 flex flex-col items-center">
+              {/* Image div  */}
+              <div className='h-30 w-30 rounded-full relative group border-6 border-black/15 shadow-[0_0_40px_rgba(99,102,241,0.2)] shrink-0'>
+                <img src={user.profile_pic || profile_pic} className='w-full h-full object-cover rounded-full' alt="" />
+                <div className='w-full h-full bg-black/50 absolute rounded-full inset-0 cursor-pointer opacity-0 z-10 group-hover:opacity-100'>
+                  <div className='h-full w-full flex items-center justify-center'>
+                    <Camera size={18} className='text-white' />
                   </div>
-                  <div className='border-8 rounded-full z-10 bottom-1 absolute right-1 border-green-600'></div>
                 </div>
-
-                <div className='flex flex-col text-white'>
-                  <span className='text-3xl md:text-4xl'>{user.name || 'User'}</span>
-                  <span className='cursor-pointer text-sm text-gray-300'>@user.name</span>
-                </div>
+                <div className='border-6 h-5 w-5 rounded-full z-10 bottom-1 absolute right-1 border-green-400'></div>
               </div>
-
+              <div className='flex flex-col items-center'>
+                <span className='text-3xl md:text-4xl text-gray-300'>{user.name || 'User'}</span>
+                <span className='cursor-pointer text-sm text-gray-300'>@{user.username || 'username'}</span>
+              </div>
             </div>
-            <div className='text-gray-400 mb-4'>Heyaa My aim is Software Developer . come lets build momentum today. Give me your hand.</div>
+
+            <div className='text-gray-400 mb-6'>Heyaa My aim is Software Developer . come lets build momentum today. Give me your hand.</div>
 
             <div className='flex justify-around mb-4'>
               <div className="text-center">
@@ -136,93 +132,46 @@ const Dashboard = () => {
 
           </Card>
 
-          {/* <GradientButton> */}
-
-          {/* Animated Glow */}
-          {/* <motion.div
-              className="absolute -top-10 -left-10 w-40 h-40 bg-indigo-500 rounded-full blur-3xl opacity-20"
-              animate={{ x: [0, 30, 0], y: [0, 20, 0] }}
-              transition={{ duration: 8, repeat: Infinity }}
-            />
-
-            <motion.div
-              className="absolute bottom-0 right-0 w-40 h-40 bg-purple-500 rounded-full blur-3xl opacity-20"
-              animate={{ x: [0, -30, 0], y: [0, -20, 0] }}
-              transition={{ duration: 10, repeat: Infinity }}
-            /> */}
-
-          {/* Content */}
-          {/* <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"> */}
-
-          {/* Left */}
-          {/* <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
-                  Welcome, {user.name || 'User'} 👋
-                </h1>
-
-                <p className="text-gray-400 text-sm md:text-base">
-                  Let’s build momentum today!!
-                </p>
-              </div> */}
-
-          {/* Right Stats */}
-          {/* <div className="flex gap-4">
-
-                <div className="text-center">
-                  <p className="text-lg font-bold text-indigo-400">{productivityScore}%</p>
-                  <p className="text-xs text-gray-400">Productivity</p>
-                </div>
-
-                <div className="text-center">
-                  <p className="text-lg font-bold text-green-400">{disciplineScore}%</p>
-                  <p className="text-xs text-gray-400">Discipline</p>
-                </div>
-
-              </div> */}
-
-          {/* </div> */}
-
         </motion.div>
 
-        {/* Clock Widget & Focus Room */}
-        <div className="mb-6">
-          <ClockWidget />
-          {/* <Link to="/focus-room">
-            <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
-              <span>Enter Focus Room</span>
-              <ArrowRight size={20} />
-            </GradientButton>
-          </Link> */}
+
+        <div className='rounded-2xl p-6 mb-6 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(99,102,241,0.15)]'>
+
+          {/* Clock Widget & Focus Room */}
+          <div className="mb-6">
+            <ClockWidget />
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+            <StatCard
+              title="Productivity"
+              value={`${productivityScore}%`}
+              icon={<Zap size={24} />}
+              data-testid="productivity-score-card"
+            />
+            <StatCard
+              title="Discipline"
+              value={`${disciplineScore}%`}
+              icon={<TrendingUp size={24} />}
+              data-testid="discipline-score-card"
+            />
+            <StatCard
+              title="Active Goals"
+              value={goals.length.toString()}
+              icon={<Target size={24} />}
+              data-testid="active-goals-card"
+            />
+            <StatCard
+              title="Tasks Today"
+              value={`${tasks.filter(t => t.completed).length}/${tasks.length}`}
+              icon={<CheckCircle size={24} />}
+              data-testid="tasks-today-card"
+            />
+          </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-
-          <StatCard
-            title="Productivity"
-            value={`${productivityScore}%`}
-            icon={<Zap size={24} />}
-            data-testid="productivity-score-card"
-          />
-          <StatCard
-            title="Discipline"
-            value={`${disciplineScore}%`}
-            icon={<TrendingUp size={24} />}
-            data-testid="discipline-score-card"
-          />
-          <StatCard
-            title="Active Goals"
-            value={goals.length.toString()}
-            icon={<Target size={24} />}
-            data-testid="active-goals-card"
-          />
-          <StatCard
-            title="Tasks Today"
-            value={`${tasks.filter(t => t.completed).length}/${tasks.length}`}
-            icon={<CheckCircle size={24} />}
-            data-testid="tasks-today-card"
-          />
-        </div>
 
         {/* Important Tasks */}
         {importantTasks.length > 0 && (
@@ -332,9 +281,10 @@ const Dashboard = () => {
             </div>
           </Card>
         ) : (
-          <Card className="mb-6 bg-gradient-to-r from-indigo-600/10 to-purple-600/10 border-indigo-500/30">
+          <Card className="mb-6 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(99,102,241,0.15)]">
             <div className="text-center py-8">
-              <div className="text-5xl mb-3">📅</div>
+              {/* <div className="text-5xl mb-3">📅</div> */}
+              <CalendarDays size={48} className="text-indigo-400 mx-auto mb-3 drop-shadow-[0_0_10px_rgba(99,102,241,0.6)]" />
               <h3 className="text-xl font-bold text-white mb-2">Plan Your Day to Stay Productive</h3>
               <p className="text-gray-400 mb-4">
                 Create a structured daily plan to maximize your productivity

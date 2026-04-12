@@ -12,6 +12,7 @@ const BottomNav = () => {
   const logout = () => {
     navigate('/login')
     localStorage.removeItem('token')
+    localStorage.removeItem('wisemind_user')
     setToken('')
   }
 
@@ -21,7 +22,7 @@ const BottomNav = () => {
     { path: '/focus-room', icon: Focus, label: 'Focus' },
     { path: '/future-twin', icon: Sparkles, label: 'FutureTwin' },
     { path: '/library', icon: Library, label: 'Library' },
-    { path: '/login', icon: LogOut, label: 'Log Out' },
+    { path: '/login', icon: LogOut, label: 'LogOut' },
   ];
 
   return (
@@ -42,7 +43,7 @@ before:bg-gradient-to-r before:from-indigo-500 before:to-purple-500">
               key={item.path}
               to={item.path}
               onClick={(e) => {
-                if (item.label === "Log Out") {
+                if (item.label === "LogOut") {
                   e.preventDefault(); // stop Link navigation
                   logout();           // call your function
                 }
