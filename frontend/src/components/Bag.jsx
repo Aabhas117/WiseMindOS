@@ -70,10 +70,10 @@ const Bag = () => {
     <div className="flex flex-col md:flex-row gap-4 h-[80vh]">
 
       {/* LEFT SIDEBAR */}
-      <div className="flex flex-col md:w-1/4 gap-3 h-full">
+      <div className="flex flex-col md:w-1/4 gap-3 h-[40vh] md:h-full">
 
         {/* NOTEBOOKS */}
-        <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 flex-1 min-h-0 flex flex-col">
+        <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 flex-1 min-h-0 flex flex-col overflow-hidden">
           <div className="flex flex-col gap-2 mb-3">
             <div className="flex justify-between items-center">
               <h3 className="text-white font-semibold">Notebooks</h3>
@@ -155,7 +155,7 @@ const Bag = () => {
         </div>
 
         {/* PAGES */}
-        <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 flex-1 min-h-0 flex flex-col">
+        <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 flex-1 min-h-0 flex flex-col overflow-hidden">
           <div className="flex justify-between mb-3">
             <h3 className="text-white font-semibold">Pages</h3>
             <button onClick={addPage}>
@@ -163,7 +163,7 @@ const Bag = () => {
             </button>
           </div>
 
-          <div className="space-y-2 overflow-y-auto pr-1">
+          <div className="space-y-2 flex-1 overflow-y-auto pr-1 min-h-0">
             {currentNotebook?.pages.map(p => (
               <div
                 key={p.id}
@@ -185,7 +185,7 @@ const Bag = () => {
       </div>
 
       {/* MAIN EDITOR */}
-      <div className="flex-1 h-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 flex flex-col">
+      <div className="flex-1 h-[60vh] md:h-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 flex flex-col">
 
         <h2 className="text-white text-lg font-semibold mb-3">
           {currentNotebook?.name || "Editor"}
@@ -215,7 +215,7 @@ const Bag = () => {
             <textarea
               value={currentPage.content}
               onChange={(e) => updateContent(e.target.value)}
-              className="flex-1 w-full bg-gray-800 text-white rounded-lg p-4 focus:outline-none resize-none"
+              className="flex-1 min-h-0 w-full bg-gray-800 text-white rounded-lg p-4 focus:outline-none resize-none"
             />
           </>
         ) : (

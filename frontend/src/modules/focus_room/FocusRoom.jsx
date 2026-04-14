@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Play, Pause, RotateCcw, X, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Play, Pause, RotateCcw, X, CheckCircle2, ArrowRight, CalendarDays } from 'lucide-react';
 import { useApp } from '../../store/AppContext';
 import Card from '../../components/Card';
 import TaskItem from '../../components/TaskItem';
 import { motion } from 'framer-motion'
 import Bag from '../../components/Bag';
 import GradientButton from '../../components/GradientButton';
+import { Link } from 'react-router-dom';
 
 const FocusRoom = () => {
   const { dailyPlan, toggleDailyPlanTaskCompletion, navigate } = useApp();
@@ -107,7 +108,7 @@ const FocusRoom = () => {
 
   // const todayTasks = tasks.filter(t => !t.completed).slice(0, 5);
 
-    // Get today's planned tasks from dailyPlan
+  // Get today's planned tasks from dailyPlan
   const todayPlannedTasks = dailyPlan?.plannedTasks || [];
   const pendingPlannedTasks = todayPlannedTasks.filter(t => !t.completed).slice(0, 8);
   const hasPlannedTasks = todayPlannedTasks.length > 0;
@@ -124,7 +125,7 @@ const FocusRoom = () => {
     return 'Long Break';
   };
 
-   const getSourceBadge = (source) => {
+  const getSourceBadge = (source) => {
     if (source === 'task') return { label: 'Task', color: 'bg-blue-500/20 text-blue-400' };
     if (source === 'habit') return { label: 'Habit', color: 'bg-green-500/20 text-green-400' };
     return { label: 'Manual', color: 'bg-purple-500/20 text-purple-400' };
@@ -207,7 +208,7 @@ const FocusRoom = () => {
               >
                 {/* Timer */}
 
-                <div className={`bg-gradient-to-r ${getModeColor()} rounded-2xl p-12 mb-6`}>
+                <div className={`bg-gradient-to-r flex flex-col items-center ${getModeColor()} rounded-2xl p-12 mb-6`}>
                   <p className="text-white text-xl mb-4">{getModeText()}</p>
                   <div className="text-8xl font-bold text-white mb-4" data-testid="timer-display">
                     {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
@@ -283,7 +284,7 @@ hover:scale-110 active:scale-95 cursor-pointer transition-all"
 
           {/* Today's Tasks */}
           <div className="lg:col-span-1">
-            <Card>
+            <Card className='bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.15)]'>
 
               {/* <h2 className="text-xl font-bold text-white mb-4">Today's Tasks</h2>
               {todayTasks.length > 0 ? (
@@ -328,11 +329,10 @@ hover:scale-110 active:scale-95 cursor-pointer transition-all"
                         {/* Completion Toggle */}
                         <button
                           onClick={() => toggleDailyPlanTaskCompletion(item.id)}
-                          className={`p-2 rounded-lg transition-all flex-shrink-0 ${
-                            item.completed
+                          className={`p-2 rounded-lg transition-all flex-shrink-0 ${item.completed
                               ? 'bg-green-500/20 text-green-400'
                               : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
-                          }`}
+                            }`}
                           data-testid={`toggle-focus-task-${item.id}`}
                         >
                           <CheckCircle2 size={18} />
@@ -342,20 +342,33 @@ hover:scale-110 active:scale-95 cursor-pointer transition-all"
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  {/* <p className="text-gray-400">No pending tasks</p>
-                  <p className="text-sm text-gray-500 mt-2">Great job! 🎉</p> */}
-                  <div className="text-4xl mb-3">📅</div>
-                  <p className="text-gray-400 mb-2">No tasks planned yet</p>
-                  <p className="text-sm text-gray-500 mb-4">Plan your day to maximize focus</p>
-                  <button
-                    onClick={() => navigate('/trackers/daily-tasks')}
-                    className="w-full px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
-                    data-testid="plan-day-btn"
-                  >
-                    Plan Your Day
-                  </button>
-                </div>
+                // <div className="text-center py-8">
+                //   <div className="text-4xl mb-3">📅</div>
+                //   <p className="text-gray-400 mb-2">No tasks planned yet</p>
+                //   <p className="text-sm text-gray-500 mb-4">Plan your day to maximize focus</p>
+                //   <button
+                //     onClick={() => navigate('/trackers/daily-tasks')}
+                //     className="w-full px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
+                //     data-testid="plan-day-btn"
+                //   >
+                //     Plan Your Day
+                //   </button>
+                // </div>
+                <Card className="mb-6 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(99,102,241,0.15)]">
+                  <div className="text-center py-8">
+                    <CalendarDays size={48} className="text-indigo-400 mx-auto mb-3 drop-shadow-[0_0_10px_rgba(99,102,241,0.6)]" />
+                    <h3 className="text-xl font-bold text-white mb-2">Plan Your Day to Stay Productive</h3>
+                    <p className="text-gray-400 mb-4">
+                      Create a structured daily plan to maximize your productivity
+                    </p>
+                    <Link to="/trackers/daily-tasks">
+                      <GradientButton data-testid="plan-now-btn">
+                        Plan Now
+                      </GradientButton>
+                    </Link>
+                  </div>
+                </Card>
+
               )}
             </Card>
           </div>

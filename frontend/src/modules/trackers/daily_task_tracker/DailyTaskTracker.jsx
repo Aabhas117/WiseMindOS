@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, Plus, ListTodo, Sparkles, X, CheckCircle2 } from 'lucide-react';
+import { Calendar, Clock, Plus, ListTodo, Sparkles, X, CheckCircle2, CalendarDays, CalendarArrowUpIcon, CalendarFoldIcon, CalendarSyncIcon } from 'lucide-react';
 import { useApp } from '../../../store/AppContext';
 import Card from '../../../components/Card';
 import TaskItem from '../../../components/TaskItem';
@@ -316,8 +316,8 @@ const DailyTaskTracker = () => {
               transition={{ duration: 0.3 }}
             >
               {isPlanEmpty ? (
-                <Card className="text-center py-12">
-                  <Sparkles size={48} className="mx-auto text-indigo-400 mb-4" />
+                <Card className="text-center py-12 backdrop-blur-lg bg-white/5 border border-white/10 shadow-[0_0_30px_rgba(99,102,241,0.15)]">
+                  <CalendarSyncIcon size={48} className="mx-auto text-indigo-400 mb-4" />
                   <h3 className="text-xl font-bold text-white mb-2">Your day is wide open!</h3>
                   <p className="text-gray-400 mb-4">Start planning by adding tasks, habits, or creating manual tasks</p>
                   <GradientButton onClick={() => setActiveTab('add')} data-testid="start-planning-btn">
@@ -327,7 +327,7 @@ const DailyTaskTracker = () => {
               ) : (
                 <>
                   {/* Progress Summary */}
-                  <Card className="mb-6 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 border-indigo-500/30">
+                  <Card className="bg-white/10 backdrop-blur-3xl border-2 border-white/25 mb-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-lg font-semibold text-white mb-1">Today's Progress</h3>
@@ -336,7 +336,7 @@ const DailyTaskTracker = () => {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-3xl font-bold text-indigo-400">
+                        <p className="text-3xl default-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(99,102,241,0.8)]">
                           {dailyPlan.plannedTasks.length > 0
                             ? Math.round((completedCount / dailyPlan.plannedTasks.length) * 100)
                             : 0}%

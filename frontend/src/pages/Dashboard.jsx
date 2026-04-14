@@ -205,7 +205,7 @@ const Dashboard = () => {
 
         {/* Today's Tasks */}
         {hasPlannedTasks ? (
-          <Card className="mb-6">
+          <Card className="mb-6 bg-white/5 border border-white/10 backdrop-blur-lg shadow-[0_0_40px_rgba(99,102,241,0.2)]">
             <div className="flex justify-between items-center mb-4">
               {/* <h2 className="text-xl font-bold text-white">Today's Task Checklist</h2> */}
               <h2 className="text-xl font-bold text-white">Today's Planned Tasks</h2>
@@ -288,7 +288,6 @@ const Dashboard = () => {
         ) : (
           <Card className="mb-6 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(99,102,241,0.15)]">
             <div className="text-center py-8">
-              {/* <div className="text-5xl mb-3">📅</div> */}
               <CalendarDays size={48} className="text-indigo-400 mx-auto mb-3 drop-shadow-[0_0_10px_rgba(99,102,241,0.6)]" />
               <h3 className="text-xl font-bold text-white mb-2">Plan Your Day to Stay Productive</h3>
               <p className="text-gray-400 mb-4">
