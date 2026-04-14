@@ -6,6 +6,7 @@ const projectSchema = new mongoose.Schema({
     goalId: { type: mongoose.Schema.Types.ObjectId, ref: 'goal', default: null },
     deadline: { type: Date },
     description: { type: String, default: '' },
+    createdFrom: { type: String, default: 'manual' },
     createdAt: { type: Date, default: Date.now }
 }, { minimize: false });
 
