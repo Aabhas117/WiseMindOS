@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Calendar, Clock, Plus, ListTodo, Sparkles, X, CheckCircle2, CalendarDays, CalendarArrowUpIcon, CalendarFoldIcon, CalendarSyncIcon } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, Clock, Plus, ListTodo, X, CheckCircle2, CalendarSyncIcon } from 'lucide-react';
 import { useApp } from '../../../store/AppContext';
 import Card from '../../../components/Card';
-import TaskItem from '../../../components/TaskItem';
 import DonutChart from '../../../components/DonutChart';
 import GradientButton from '../../../components/GradientButton';
 import InputField from '../../../components/InputField';
 import { format } from 'date-fns';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const DailyTaskTracker = () => {
   const {

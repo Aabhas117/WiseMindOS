@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarCheck, CalendarDays } from 'lucide-react';
+import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import Card from '../components/Card';
 import StatCard from '../components/StatCard';
@@ -14,7 +14,6 @@ import GradientButton from '../components/GradientButton';
 import { motion } from 'framer-motion'
 import { useMemo } from 'react';
 import profile_pic from '../assets/profile_pic.svg'
-import { showToast } from '../utils/toastHelper';
 
 
 const Dashboard = () => {
@@ -182,7 +181,9 @@ const Dashboard = () => {
         {importantTasks.length > 0 && (
           <Card className="mb-6 border-orange-500/30 bg-orange-500/5 backdrop-blur-lg">
             <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <span className="text-orange-400">⭐</span> Important Tasks
+              {/* <span className="text-orange-400">⭐</span> */}
+              <Star className="text-orange-400 " size={18} />
+               Important Tasks
             </h2>
             <div className="space-y-3">
               {importantTasks.slice(0, 4).map(task => (
@@ -306,7 +307,7 @@ const Dashboard = () => {
         {behindTasks.length > 0 && (
           <Card className="mb-6 border-red-500/30 bg-orange-500/5 backdrop-blur-lg">
             <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <span className="text-red-400">⚠️</span> Behind Schedule
+              <AlertTriangle className="text-red-400" size={18} /> Behind Schedule
             </h2>
             <div className="space-y-3">
               {behindTasks.slice(0, 4).map(task => (
