@@ -18,6 +18,8 @@ const GoalTracker = () => {
     goals,
     projects,
     addGoal,
+    addProject,
+    addTask,
     updateGoal,
     deleteGoal,
     calculateGoalProgress,
@@ -29,6 +31,10 @@ const GoalTracker = () => {
 
   const [selectedGoal, setSelectedGoal] = useState(null);
   const [showAddGoal, setShowAddGoal] = useState(false);
+  const [showAddTask, setShowAddTask] = useState(false);
+  const [newTask, setNewTask] = useState({ title: '', deadline: '', projectId: '', isImportant: false });
+  const [showAddProject, setShowAddProject] = useState(false);
+  const [newProject, setNewProject] = useState({ title: '', deadline: '', description: '' });
   const [newGoal, setNewGoal] = useState({ title: '', type: 'mid-term', description: '', deadline: '' });
 
   const handleAddGoal = (e) => {
@@ -37,6 +43,28 @@ const GoalTracker = () => {
     addGoal(newGoal);
     setNewGoal({ title: '', type: 'mid-term', description: '', deadline: '' });
     setShowAddGoal(false);
+  };
+
+  const handleAddProject = () => {
+    if (!newProject.title.trim() || !selectedGoal) return;
+    addProject({
+      ...newProject,
+      goalId: selectedGoal.id,
+      createdFrom: 'goal'
+    });
+    setNewProject({ title: '', deadline: '', description: '' });
+    setShowAddProject(false);
+  };
+
+  const handleAddTask = () => {
+    if (!newTask.title.trim() || !selectedGoal) return;
+    addTask({
+      ...newTask,
+      goalId: selectedGoal.id,
+      createdFrom: 'goal'
+    });
+    setNewTask({ title: '', deadline: '', projectId: '', isImportant: false });
+    setShowAddTask(false);
   };
 
   const getTypeColor = (type) => {
@@ -145,9 +173,19 @@ const GoalTracker = () => {
             </Card>
           </motion.div>
 
-          {goalProjects.length > 0 && (
+          {goalProjects.length > 0 ? (
             <div className="mb-6">
-              <h2 className="text-xl font-bold text-white mb-4">Projects</h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-white">Projects</h2>
+                <button
+                  onClick={() => setShowAddProject(true)}
+                  data-testid="add-project-btn"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-[0_0_20px_rgba(99,102,241,0.6)] hover:-translate-y-1 active:scale-95 text-white px-4 py-2 rounded-lg transition-all cursor-pointer"
+                >
+                  <Plus size={20} className="inline mr-2" />
+                  Add Project
+                </button>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {goalProjects.map((project, index) => (
                   <motion.div
@@ -166,11 +204,31 @@ const GoalTracker = () => {
                 ))}
               </div>
             </div>
+          ) : goalTasks.length > 0 && (
+            <Card className="bg-white/5 mb-4 backdrop-blur-xl border border-white/10 text-center">
+              <h2 className="text-xl font-bold text-white mb-4 text-start">Projects</h2>
+              <p className="text-gray-400 text-center py-8">
+                No projects yet.
+                <br />
+                <span className="text-indigo-400">Add Projects for a stronger you.</span>
+              </p>
+            </Card>
           )}
 
-          {goalTasks.length > 0 && (
-            <Card className="bg-white/5 backdrop-blur-xl border border-white/10">
-              <h2 className="text-xl font-bold text-white mb-4">Tasks</h2>
+          {goalTasks.length > 0 ? (
+            <Card className="bg-white/5 mb-4 backdrop-blur-xl border border-white/10">
+              {/* <h2 className="text-xl font-bold text-white">Tasks</h2> */}
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-white">Tasks</h2>
+                <button
+                  onClick={() => setShowAddTask(true)}
+                  data-testid="add-task-btn"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-[0_0_20px_rgba(99,102,241,0.6)] hover:-translate-y-1 active:scale-95 text-white px-4 py-2 rounded-lg transition-all cursor-pointer"
+                >
+                  <Plus size={20} className="inline mr-2" />
+                  Add Task
+                </button>
+              </div>
               <div className="space-y-3">
                 {goalTasks.map((task, index) => (
                   <motion.div
@@ -186,7 +244,17 @@ const GoalTracker = () => {
                 ))}
               </div>
             </Card>
+          ) : goalProjects.length > 0 && (
+            <Card className="bg-white/5 mb-4 backdrop-blur-xl border border-white/10 text-center">
+              <h2 className="text-xl font-bold text-white mb-4 text-start">Tasks</h2>
+              <p className="text-gray-400 text-center py-8">
+                No tasks yet.
+                <br />
+                <span className="text-indigo-400">Add your first task!</span>
+              </p>
+            </Card>
           )}
+
 
           {goalProjects.length === 0 && goalTasks.length === 0 && (
             <Card className="bg-white/5 backdrop-blur-xl border border-white/10 text-center">
@@ -198,6 +266,109 @@ const GoalTracker = () => {
             </Card>
           )}
         </div>
+        {/* Add Task Modal */}
+        <Modal isOpen={showAddTask} onClose={() => setShowAddTask(false)} title="Add Task to Project">
+          <div className="space-y-4">
+            <InputField
+              label="Task Title"
+              value={newTask.title}
+              onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+              placeholder="Enter task title"
+              data-testid="task-title-input"
+            />
+            <div>
+              <label className="block text-gray-300 text-sm font-medium mb-2">Link to Project (Optional)</label>
+              <select
+                value={newTask.projectId}
+                onChange={(e) => setNewTask({ ...newTask, projectId: e.target.value })}
+                className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+                data-testid="task-project-select"
+              >
+                <option value="">No Project (independent)</option>
+                {goalProjects.map(project => (
+                  <option key={project.id} value={project.id}>{project.title}</option>
+                ))}
+              </select>
+            </div>
+            <InputField
+              label="Deadline (Optional)"
+              type="date"
+              value={newTask.deadline}
+              onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
+              data-testid="task-deadline-input"
+            />
+            <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+            <label htmlFor="important" className="text-gray-300 text-sm">
+              Mark as Important
+            </label>
+
+            <input
+              type="checkbox"
+              id="important"
+              checked={newTask.isImportant}
+              onChange={(e) => setNewTask({ ...newTask, isImportant: e.target.checked })}
+              className="w-5 h-5 accent-orange-500"
+              data-testid="task-important-checkbox"
+            />
+          </div>
+            <GradientButton onClick={handleAddTask} className="w-full" data-testid="submit-task-btn">
+              Add Task
+            </GradientButton>
+          </div>
+        </Modal>
+        {/* Add Project Modal */}
+        <Modal isOpen={showAddProject} onClose={() => setShowAddProject(false)} title="Create New Project">
+          <div className="space-y-4">
+            <InputField
+              label="Project Title"
+              value={newProject.title}
+              onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+              placeholder="Enter project title"
+              required
+              data-testid="project-title-input"
+            />
+
+            {/* <div>
+              <label className="block text-gray-300 text-sm font-medium mb-2">Link to Goal (Optional)</label>
+              <select
+                value={newProject.goalId}
+                onChange={(e) => setNewProject({ ...newProject, goalId: e.target.value })}
+                className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+                data-testid="project-goal-select"
+              >
+                <option value="">No goal (independent)</option>
+                {goals.map(goal => (
+                  <option key={goal.id} value={goal.id}>{goal.title}</option>
+                ))}
+              </select>
+            </div> */}
+
+            <InputField
+              label="Deadline (Optional)"
+              type="date"
+              value={newProject.deadline}
+              onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
+              required
+              data-testid="project-deadline-input"
+            />
+
+            <div>
+              <label className="block text-gray-300 text-sm font-medium mb-2">Description</label>
+              <textarea
+                value={newProject.description}
+                onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                placeholder="Describe your project..."
+                data-testid="project-description-input"
+                required
+                className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 min-h-[100px]"
+              />
+            </div>
+
+            <GradientButton onClick={handleAddProject} className="w-full" data-testid="submit-project-btn">
+              Create Project
+            </GradientButton>
+          </div>
+        </Modal>
       </div>
     );
   }

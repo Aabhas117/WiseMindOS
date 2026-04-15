@@ -27,7 +27,7 @@ const ProjectTracker = () => {
   const [showAddProject, setShowAddProject] = useState(false);
   const [showAddTask, setShowAddTask] = useState(false);
   const [newProject, setNewProject] = useState({ title: '', goalId: '', deadline: '', description: '' });
-  const [newTask, setNewTask] = useState({ title: '', deadline: '' });
+  const [newTask, setNewTask] = useState({ title: '', deadline: '', isImportant: false });
 
   const handleAddProject = () => {
     if (!newProject.title.trim()) return;
@@ -44,7 +44,7 @@ const ProjectTracker = () => {
       goalId: selectedProject.goalId,
       createdFrom: 'project'
     });
-    setNewTask({ title: '', deadline: '' });
+    setNewTask({ title: '', deadline: '', isImportant: false });
     setShowAddTask(false);
   };
 
@@ -162,6 +162,20 @@ const ProjectTracker = () => {
               onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
               data-testid="task-deadline-input"
             />
+            <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+            <label htmlFor="important" className="text-gray-300 text-sm">
+              Mark as Important
+            </label>
+
+            <input
+              type="checkbox"
+              id="important"
+              checked={newTask.isImportant}
+              onChange={(e) => setNewTask({ ...newTask, isImportant: e.target.checked })}
+              className="w-5 h-5 accent-orange-500"
+              data-testid="task-important-checkbox"
+            />
+          </div>
             <GradientButton onClick={handleAddTask} className="w-full" data-testid="submit-task-btn">
               Add Task
             </GradientButton>

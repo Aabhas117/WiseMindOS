@@ -37,7 +37,9 @@ const SoloTaskTracker = () => {
   };
 
   // Filter tasks
-  let filteredTasks = tasks.filter(task => !task.projectId || task.createdFrom === 'solo');
+  // let filteredTasks = tasks.filter(task => !task.projectId || task.createdFrom === 'solo');
+  let filteredTasks = tasks;
+
 
   if (filterGoal) {
     filteredTasks = filteredTasks.filter(task => task.goalId === filterGoal);
