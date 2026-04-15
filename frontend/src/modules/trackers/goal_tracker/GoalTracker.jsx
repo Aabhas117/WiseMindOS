@@ -77,7 +77,7 @@ const GoalTracker = () => {
   };
 
   const handleGoalClick = (goal) => {
-    console.log("Clicked:", goal);
+    // console.log("Clicked:", goal);
     setSelectedGoal(goal);
   };
 
@@ -252,6 +252,14 @@ const GoalTracker = () => {
                 <br />
                 <span className="text-indigo-400">Add your first task!</span>
               </p>
+              <button
+                onClick={() => setShowAddTask(true)}
+                data-testid="add-task-btn"
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-[0_0_20px_rgba(99,102,241,0.6)] hover:-translate-y-1 active:scale-95 text-white px-4 py-2 rounded-lg transition-all cursor-pointer"
+              >
+                <Plus size={20} className="inline mr-2" />
+                Add Task
+              </button>
             </Card>
           )}
 
@@ -263,6 +271,24 @@ const GoalTracker = () => {
                 <br />
                 <span className="text-indigo-400">Start building your execution system</span>
               </p>
+              <div className='flex gap-3 justify-center'>
+                <button
+                  onClick={() => setShowAddProject(true)}
+                  data-testid="add-project-btn"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-[0_0_20px_rgba(99,102,241,0.6)] hover:-translate-y-1 active:scale-95 text-white px-4 py-2 rounded-lg transition-all cursor-pointer"
+                >
+                  <Plus size={20} className="inline mr-2" />
+                  Add Project
+                </button>
+                <button
+                  onClick={() => setShowAddTask(true)}
+                  data-testid="add-task-btn"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-[0_0_20px_rgba(99,102,241,0.6)] hover:-translate-y-1 active:scale-95 text-white px-4 py-2 rounded-lg transition-all cursor-pointer"
+                >
+                  <Plus size={20} className="inline mr-2" />
+                  Add Task
+                </button>
+              </div>
             </Card>
           )}
         </div>
@@ -298,19 +324,19 @@ const GoalTracker = () => {
               data-testid="task-deadline-input"
             />
             <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-4 py-3">
-            <label htmlFor="important" className="text-gray-300 text-sm">
-              Mark as Important
-            </label>
+              <label htmlFor="important" className="text-gray-300 text-sm">
+                Mark as Important
+              </label>
 
-            <input
-              type="checkbox"
-              id="important"
-              checked={newTask.isImportant}
-              onChange={(e) => setNewTask({ ...newTask, isImportant: e.target.checked })}
-              className="w-5 h-5 accent-orange-500"
-              data-testid="task-important-checkbox"
-            />
-          </div>
+              <input
+                type="checkbox"
+                id="important"
+                checked={newTask.isImportant}
+                onChange={(e) => setNewTask({ ...newTask, isImportant: e.target.checked })}
+                className="w-5 h-5 accent-orange-500"
+                data-testid="task-important-checkbox"
+              />
+            </div>
             <GradientButton onClick={handleAddTask} className="w-full" data-testid="submit-task-btn">
               Add Task
             </GradientButton>
