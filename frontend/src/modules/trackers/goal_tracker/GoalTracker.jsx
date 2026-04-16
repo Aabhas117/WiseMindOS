@@ -212,6 +212,14 @@ const GoalTracker = () => {
                 <br />
                 <span className="text-indigo-400">Add Projects for a stronger you.</span>
               </p>
+              <button
+                  onClick={() => setShowAddProject(true)}
+                  data-testid="add-project-btn"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-[0_0_20px_rgba(99,102,241,0.6)] hover:-translate-y-1 active:scale-95 text-white px-4 py-2 rounded-lg transition-all cursor-pointer"
+                >
+                  <Plus size={20} className="inline mr-2" />
+                  Add Project
+                </button>
             </Card>
           )}
 
